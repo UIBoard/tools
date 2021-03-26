@@ -13,9 +13,9 @@ De subcomponenten zijn onderverdeeld in twee segmenten:
 
 - Diegene die zichtbaar zijn in het voorbeeldscherm
   - Zoals bijvoorbeeld de drie topic rijen, en de afbeelding
-- Diegene die niet zichtbaar zijn in het voorbeeld maar er toch in gebruikt worden.
+- Diegene die visueel niet zichtbaar zijn in het voorbeeld maar toch gebruikt worden in het component via code.
   - Zoals bijvoorbeeld: een link naar de settings pagina
-  - Links naar niewspaginas
+  - Links naar nieuwspaginas
 
 Sommige componenten kunnen een verschillend uiterlijk hebben op basis van "State". Deze view heeft bijvoorbeeld een ***loading*** state en een ***loaded*** state.
 
