@@ -1,5 +1,13 @@
 ## Prior art
 
+Creating documentation for component based user interfaces (UIs) that has many different aspects. In this chapter we cover literature touching the following aspects: 
+
+- Automation as a solution for updating & maintainance
+- Visual representation
+- Interaction (graph navigation)
+
+In addition to the literature, an overview is given covering features and missing features of 4 related applications that are used in the industry.
+
 ### Literature
 
 #### Automated documentation
@@ -41,6 +49,8 @@ One can see a software code base as a big graph of interconnected nodes. Efficie
 
 Erben et al. [^Erben 2005] discuss graph navigation techniques specially designed to navigate in code bases and propose new interactions for UML diagrams that are hierarchically layered. Similarly, KaitoroBase is tool developed by Su et al. [^Su 2009] that provides assistance in non-linear exploration and visualization of software architecture documents and shows how grouping individual elements reduce cognitive load on the users.
 
+// TODO Add doppio research
+
 [^Erben 2005]: Erben, Nils, and K. Lohr. "SAB-The Software Architecture Browser." *3rd IEEE International Workshop on Visualizing Software for Understanding and Analysis*. IEEE, 2005.
 
 [^Pienta 2015]: Pienta, Robert, et al. "Scalable graph exploration and visualization: Sensemaking challenges and opportunities." *2015 International conference on Big Data and smart computing (BIGCOMP)*. IEEE, 2015.
@@ -48,7 +58,7 @@ Erben et al. [^Erben 2005] discuss graph navigation techniques specially designe
 
 #### Prescriptive theory
 
-Hundreds of papers[^Merino 2018] have been written with inventions and suggestions of new ways of visualising software. But "in designing notations, the majority of effort is spent on semantics, with graphical conventions largely an afterthought. Typically, no design rationale, scientific or otherwise, is provided for visual representation choices. While SE has developed mature methods for evaluating and designing semantics, it lacks equivalent methods for visual syntax." [^Moody 2009] 
+Hundreds of papers[^Merino 2018] have been written with inventions and suggestions of new ways for visualising software. But "in designing notations, the majority of effort is spent on semantics, with graphical conventions largely an afterthought. Typically, no design rationale, scientific or otherwise, is provided for visual representation choices. While SE has developed mature methods for evaluating and designing semantics, it lacks equivalent methods for visual syntax." [^Moody 2009] 
 
 To counter this, T. Green layed out a foundation with his work on the Cognitive Dimensions of Notations [^Green 1989][^Blackwell 2001]. Later on, Moody et al. refined his findings and used it to construct a more rigid framework toward a "Scientific Basis for Constructing Visual Notations in Software Engineering" [^Moody 2009] in which they "define a set of principles for designing cognitively effective visual notations: ones that are optimized for human communication and problem solving. Together these form a design theory, called the Physics of Notations as it focuses on the physical (perceptual) properties of notations rather than their logical (semantic) properties. The principles were synthesized from theory and empirical evidence from a wide range of fields and rest on an explicit theory of how visual notations communicate." [^Moody 2009] This framework will be used further in this thesis together with the techniques for graph exploration from Pienta et al. [^Pienta 2015] as a foundation to guide the design of our tool to explore component based UI code.
 
@@ -57,4 +67,14 @@ To counter this, T. Green layed out a foundation with his work on the Cognitive 
 [^Moody 2009]: Moody, Daniel. "The “physics” of notations: toward a scientific basis for constructing visual notations in software engineering." *IEEE Transactions on software engineering* 35.6 (2009): 756-779.
 
 ### Industry
+
+// TODO UML usage in practice
+
+// TODO Interface Builder storyboards
+
+// TODO Visual paradigm
+
+// TODO Webkit inspector
+
+// TODO: StorybookJS
 
