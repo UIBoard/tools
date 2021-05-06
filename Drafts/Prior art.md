@@ -6,7 +6,7 @@
 
 Creation and maintanance of documentation is a hard and time consuming task. A survey by Forward et al. [^Forward 2002] shows that its "participants agree that documentation tools should seek to better extract knowledge from core resources" like source code.
 
-Various attempts have been made to use this knowledge for documentation purposes. Antoniol et al. [^Antoniol 2002] and Marcus et al. [^Marcus 2003] discuss how to extract knowledge from source code to automatically couple snippets from free text documents with their corresponding source code. 
+Various attempts have been made to use this knowledge for documentation purposes. Antoniol et al. [^Antoniol 2002] and Marcus et al. [^Marcus 2003] discuss how to extract knowledge from source code to automatically couple snippets from free text documents with their corresponding source code fragments. 
 
 Another technique is to generate documentation text using AI. Barone et al. [^Barone 2017] scrape Github to collect python functions and their corresponding documentation. This data can then be used to automatically convert code to a summarising text using a neural attention model as is shown by Iyer et al. [^Iyer 2016]
 
@@ -18,7 +18,7 @@ Another technique is to generate documentation text using AI. Barone et al. [^Ba
 
 #### Graphical visualisation
 
-Other than textual documentation, there are lots of other visual techniques researchers have come up with over the last decennia. A survery published by [^Caserta 2010] in 2010 provides a good overview of graphical documentation techniques, both 2D- and 3D-based, representing the static aspects of the software and its evolution. It covers classical diagrams like those specified in UML as well as more special representations like, city & solary system metaphore representations, Voronoi treemaps etc. The survey categorises them according to their characteristics and features.
+Other than textual documentation, there are lots of other visual techniques researchers have come up with over the last decennia. A survery published by Caserta et al. [^Caserta 2010] in 2010 provides a good overview of graphical documentation techniques, both 2D- and 3D-based, representing the static aspects of the software and its evolution. It covers classical diagrams like those specified in UML as well as more special representations like, city & solary system metaphore representations, Voronoi treemaps etc. The survey categorises them according to their characteristics and features.
 
 ![Caserta2010](../Media/Images/Caserta2010.jpg)
 
@@ -39,13 +39,22 @@ When working with larger code bases, documentation (especially graphical represe
 
 One can see a software code base as a big graph of interconnected nodes. Efficient navigation in graphs has been covered in various researche papers. Pienta et al. [^Pienta 2015] propose a graph sensemaking hierarchy that categorizes tools and techniques based on how to interact with large graph data and summarize and compare their strengths and weaknesses.
 
-Erben et al. discuss graph navigation techniques specially designed to navigate in code bases. They propose a new interactions for UML diagrams that are hierarchically layered.
+Erben et al. [^Erben 2005] discuss graph navigation techniques specially designed to navigate in code bases and propose new interactions for UML diagrams that are hierarchically layered. Similarly, KaitoroBase is tool developed by Su et al. [^Su 2009] that provides assistance in non-linear exploration and visualization of software architecture documents and shows how grouping individual elements reduce cognitive load on the users.
 
 [^Erben 2005]: Erben, Nils, and K. Lohr. "SAB-The Software Architecture Browser." *3rd IEEE International Workshop on Visualizing Software for Understanding and Analysis*. IEEE, 2005.
 
 [^Pienta 2015]: Pienta, Robert, et al. "Scalable graph exploration and visualization: Sensemaking challenges and opportunities." *2015 International conference on Big Data and smart computing (BIGCOMP)*. IEEE, 2015.
+[^Su 2009]: Su, Moon Ting, Christian Hirsch, and John Hosking. "Kaitorobase: Visual exploration of software architecture documents." *2009 IEEE/ACM International Conference on Automated Software Engineering*. IEEE, 2009.
 
+#### Prescriptive theory
 
+Hundreds of papers[^Merino 2018] have been written with inventions and suggestions of new ways of visualising software. But "in designing notations, the majority of effort is spent on semantics, with graphical conventions largely an afterthought. Typically, no design rationale, scientific or otherwise, is provided for visual representation choices. While SE has developed mature methods for evaluating and designing semantics, it lacks equivalent methods for visual syntax." [^Moody 2009] 
+
+To counter this, T. Green layed out a foundation with his work on the Cognitive Dimensions of Notations [^Green 1989][^Blackwell 2001]. Later on, Moody et al. refined his findings and used it to construct a more rigid framework toward a "Scientific Basis for Constructing Visual Notations in Software Engineering" [^Moody 2009] in which they "define a set of principles for designing cognitively effective visual notations: ones that are optimized for human communication and problem solving. Together these form a design theory, called the Physics of Notations as it focuses on the physical (perceptual) properties of notations rather than their logical (semantic) properties. The principles were synthesized from theory and empirical evidence from a wide range of fields and rest on an explicit theory of how visual notations communicate." [^Moody 2009] This framework will be used further in this thesis together with the techniques for graph exploration from Pienta et al. [^Pienta 2015] as a foundation to guide the design of our tool to explore component based UI code.
+
+[^Green 1989]: Green, Thomas RG. "Cognitive dimensions of notations." *People and computers V* (1989): 443-460.
+[^Blackwell 2001]: Blackwell, Alan F., et al. "Cognitive dimensions of notations: Design tools for cognitive technology." *International Conference on Cognitive Technology*. Springer, Berlin, Heidelberg, 2001.
+[^Moody 2009]: Moody, Daniel. "The “physics” of notations: toward a scientific basis for constructing visual notations in software engineering." *IEEE Transactions on software engineering* 35.6 (2009): 756-779.
 
 ### Industry
 
