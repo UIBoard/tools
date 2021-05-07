@@ -1,6 +1,6 @@
 ## Prior art
 
-Documenting software has many different aspects. In this chapter we first cover literature touching research on 4 broader topics regarding documentation: 
+Documenting software has many different aspects. In this chapter we first cover literature touching research on 4 broader topics regarding software documentation: 
 
 - Automation as a solution for updating & maintainance
 - Visual representation of software
@@ -51,12 +51,13 @@ Asenov discusses a novel IDE called Envision in his doctoral thesis [^Asenov 20
 
 When working with larger code bases, documentation (especially graphical representations) can quickly become overcluttered and difficult to understand [^Erben 2005]. Hence, creating static visualisations of code is often not sufficient and thus some kind of interaction is needed.
 
+// TODO: Finding First Focus Points (Sillito 2006)
+
 One can see a software code base as a big graph of interconnected nodes. Efficient navigation in graphs has been covered in various researche papers. Pienta et al. [^Pienta 2015] propose a graph sensemaking hierarchy that categorizes tools and techniques based on how to interact with large graph data and summarize and compare their strengths and weaknesses.
 
 Erben et al. [^Erben 2005] discuss graph navigation techniques specially designed to navigate in code bases and propose new interactions for UML diagrams that are hierarchically layered. Similarly, KaitoroBase is tool developed by Su et al. [^Su 2009] that provides assistance in non-linear exploration and visualization of software architecture documents and shows how grouping individual elements reduce cognitive load on the users.
 
 [^Erben 2005]: Erben, Nils, and K. Lohr. "SAB-The Software Architecture Browser." *3rd IEEE International Workshop on Visualizing Software for Understanding and Analysis*. IEEE, 2005.
-
 [^Pienta 2015]: Pienta, Robert, et al. "Scalable graph exploration and visualization: Sensemaking challenges and opportunities." *2015 International conference on Big Data and smart computing (BIGCOMP)*. IEEE, 2015.
 [^Su 2009]: Su, Moon Ting, Christian Hirsch, and John Hosking. "Kaitorobase: Visual exploration of software architecture documents." *2009 IEEE/ACM International Conference on Automated Software Engineering*. IEEE, 2009.
 
@@ -70,11 +71,9 @@ To counter this, T. Green layed out a foundation with his work on the Cognitive 
 [^Blackwell 2001]: Blackwell, Alan F., et al. "Cognitive dimensions of notations: Design tools for cognitive technology." *International Conference on Cognitive Technology*. Springer, Berlin, Heidelberg, 2001.
 [^Moody 2009]: Moody, Daniel. "The “physics” of notations: toward a scientific basis for constructing visual notations in software engineering." *IEEE Transactions on software engineering* 35.6 (2009): 756-779.
 
-
-
 #### UI Storyboards
 
-The research papers that are probably the most closely related to this work are the ones on Doppio [^Chi 2015], DemoScript [^Chi 2016] and StoryDroid [^Chen 2019]. Doppio is a tool to visualize the flow between GUI screens that happens during user interactions. It's main drawbacks are that it's users need to manually execute every possible user interaction path to create a storyboard visualisation of them. Chi further developed on this idea and also created DemoScript which allows developers to write down textual scripts to define UI interaction flows. But the same drawback is still that in addition to the fully written app, one also need to write these scripts to generate a storyboard.
+The research papers that are probably the most closely related to this work are the ones on Doppio [^Chi 2015], DemoScript [^Chi 2016] and StoryDroid [^Chen 2019]. Doppio is a tool to visualize the flow between GUI screens that happens during user interactions. It's main drawbacks are that it's users need to manually execute every possible user interaction path to create a storyboard visualisation of them. Chi further developed on this idea and also created DemoScript [^Chi 2016] which allows developers to write down textual scripts to define UI interaction flows. But the same drawback is still that in addition to the fully written app, one also need to write these scripts to generate a storyboard.
 
 In that regard Chen et al. [^Chen 2019] proposed some interesting new ways to overcome this barrier and automate the creation of storyboards. They discuss how stochastic GUI testing tools like STOAT [^Su 2017] can automatically create activity transition graphs (ATGs) from which a storyboard can be generated. They go even further and show how their own tool StoryDroid is even better at the creation of ATGs using only static language analys. In addition to the effectiveness of the ATG extraction they also perform user studies to show the usefullness of such storyboards for information retrieval of small applications. For the graphical representation of bigger graphs however, "STORYDROID needs to provide a better strategy to visualize it" [^Chen 2019].
 
@@ -85,13 +84,28 @@ In that regard Chen et al. [^Chen 2019] proposed some interesting new ways to ov
 
 ### Industry
 
-// TODO UML usage in practice
+When it comes to component based UI software, web technology is probably the oldest and most proven one that is still being activeley used nowadays. HTML and javascript have laid the foundation for countless component based UI frameworks. Some of the most popular ones being built by leading companies in the industry: React (by facebook), Angular and Polymer (by Google). An enourmous amount of other component based frameworks followed: VueJS, Svelte, Ember, Ionic etc.
 
-// TODO Interface Builder storyboards
+That is why we will first cover two tools used in web development environments. The **Web Inspector** and **Storybook**.
 
-// TODO Visual paradigm
+After lots of iterations and different approaches to component based web design, multiple platforms in the native application development environment began to adopt UI design practices from the web industry. Google created Jetpack Compose and Flutter with the Flutter inspector as clear example of web tech heritage. Facebook introduced react native, a way to create native apps using mostly web technology. And most recently Apple shared their vision on the future of UI development with the announcement of SwiftUI: a framework including a domain-specific language (DSL) for creating component based user interfaces.
 
-// TODO Webkit inspector
+So after discussing the web development tooling we shed some light on **Storyboards** in Xcode (part of the official tooling to create iOS apps). And finally we discuss some popular modeling software used in industry: **Visual paradigm** and **Enterprise architect**.
 
-// TODO: StorybookJS
+Finally we provide an overview of these tools' strengths and weaknesses.
 
+#### Web inspector
+
+To find initial focus points in code, the web inspector is probably the most used one. It has many variants developed by browser creators: firebug, webkit web inspector, chrome devtools, just to name a few. But they all have this common feature that enables us to click on any element of a web page and to inspect its source code.
+
+#### StorybookJS
+
+#### Interface Builder storyboards
+
+#### Enterprise architect
+
+// TODO
+
+- Chren 2019 
+- Farias 2018 UML usage
+- Ozkaya 2020 Enterprise architect
