@@ -1,12 +1,18 @@
 ## Prior art
 
-Creating documentation for component based user interfaces (UIs) that has many different aspects. In this chapter we cover literature touching the following aspects: 
+Documenting software has many different aspects. In this chapter we first cover literature touching research on 4 broader topics regarding documentation: 
 
 - Automation as a solution for updating & maintainance
-- Visual representation
+- Visual representation of software
 - Interaction (graph navigation)
+- Prescriptive theory for notation design
 
-In addition to the literature, an overview is given covering features and missing features of 4 related applications that are used in the industry.
+Then we discuss some of the most recent research and zoom in on the specific topic of UI storyboards. And finally, in addition to the literature, an overview is given covering features and missing features of 4 related tools that are used in the industry:
+
+- Webkit inspector
+- Storybook JS
+- InterfaceBuilder Storyboards
+- Visual paradigm
 
 ### Literature
 
@@ -28,7 +34,7 @@ Another technique is to generate documentation text using AI. Barone et al. [^Ba
 
 Other than textual documentation, there are lots of other visual techniques researchers have come up with over the last decennia. A survery published by Caserta et al. [^Caserta 2010] in 2010 provides a good overview of graphical documentation techniques, both 2D- and 3D-based, representing the static aspects of the software and its evolution. It covers classical diagrams like those specified in UML as well as more special representations like, city & solary system metaphore representations, Voronoi treemaps etc. The survey categorises them according to their characteristics and features.
 
-![Caserta2010](../Media/Images/Caserta2010.jpg)
+![Caserta 2010](../Media/Images/Caserta2010.jpg)
 
 Later on, in 2014, Shahin et al. [^Shahin 2014] did a systematic review of software architecture visualization techniques. They do not only summarize the different techiques found but also identify their purposeses and report the level of evidence their is to support the quality of the used techniques. Two main points they make in their conclusion are that there is a general lack of controlled experiments to evaluate the visualisations and that there is more likelihood to gather and provide higher level of evidence for (semi-)automatic visualisation tools compared with techniques which needs to be applied manually.
 
@@ -49,8 +55,6 @@ One can see a software code base as a big graph of interconnected nodes. Efficie
 
 Erben et al. [^Erben 2005] discuss graph navigation techniques specially designed to navigate in code bases and propose new interactions for UML diagrams that are hierarchically layered. Similarly, KaitoroBase is tool developed by Su et al. [^Su 2009] that provides assistance in non-linear exploration and visualization of software architecture documents and shows how grouping individual elements reduce cognitive load on the users.
 
-// TODO Add doppio research
-
 [^Erben 2005]: Erben, Nils, and K. Lohr. "SAB-The Software Architecture Browser." *3rd IEEE International Workshop on Visualizing Software for Understanding and Analysis*. IEEE, 2005.
 
 [^Pienta 2015]: Pienta, Robert, et al. "Scalable graph exploration and visualization: Sensemaking challenges and opportunities." *2015 International conference on Big Data and smart computing (BIGCOMP)*. IEEE, 2015.
@@ -65,6 +69,19 @@ To counter this, T. Green layed out a foundation with his work on the Cognitive 
 [^Green 1989]: Green, Thomas RG. "Cognitive dimensions of notations." *People and computers V* (1989): 443-460.
 [^Blackwell 2001]: Blackwell, Alan F., et al. "Cognitive dimensions of notations: Design tools for cognitive technology." *International Conference on Cognitive Technology*. Springer, Berlin, Heidelberg, 2001.
 [^Moody 2009]: Moody, Daniel. "The “physics” of notations: toward a scientific basis for constructing visual notations in software engineering." *IEEE Transactions on software engineering* 35.6 (2009): 756-779.
+
+
+
+#### UI Storyboards
+
+The research papers that are probably the most closely related to this work are the ones on Doppio [^Chi 2015], DemoScript [^Chi 2016] and StoryDroid [^Chen 2019]. Doppio is a tool to visualize the flow between GUI screens that happens during user interactions. It's main drawbacks are that it's users need to manually execute every possible user interaction path to create a storyboard visualisation of them. Chi further developed on this idea and also created DemoScript which allows developers to write down textual scripts to define UI interaction flows. But the same drawback is still that in addition to the fully written app, one also need to write these scripts to generate a storyboard.
+
+In that regard Chen et al. [^Chen 2019] proposed some interesting new ways to overcome this barrier and automate the creation of storyboards. They discuss how stochastic GUI testing tools like STOAT [^Su 2017] can automatically create activity transition graphs (ATGs) from which a storyboard can be generated. They go even further and show how their own tool StoryDroid is even better at the creation of ATGs using only static language analys. In addition to the effectiveness of the ATG extraction they also perform user studies to show the usefullness of such storyboards for information retrieval of small applications. For the graphical representation of bigger graphs however, "STORYDROID needs to provide a better strategy to visualize it" [^Chen 2019].
+
+[^Chi 2015]: Chi, Pei-Yu, Sen-Po Hu, and Yang Li. "Doppio: Tracking ui flows and code changes for app development." *Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems*. 2018.
+[^Chi 2016]: Chi, Pei-Yu, Yang Li, and Björn Hartmann. "Enhancing cross-device interaction scripting with interactive illustrations." *Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems*. 2016.
+[^Su 2017]: Su, Ting, et al. "Guided, stochastic model-based GUI testing of Android apps." Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering. 2017.
+[^Chen 2019]: Chen, Sen, et al. "Storydroid: Automated generation of storyboard for Android apps." *2019 IEEE/ACM 41st International Conference on Software Engineering (ICSE)*. IEEE, 2019.
 
 ### Industry
 
