@@ -4,15 +4,15 @@ Documenting software has many different aspects. In this chapter we first cover 
 
 - Automation as a solution for updating & maintenance
 - Visual representation of software
-- Interaction (graph navigation)
-- Prescriptive theory for notation design
+- Graph navigation as an interaction technique
+- Prescriptive theory as a foundation for graphical design decisions
 
-Then we discuss some of the most recent research and zoom in on the specific topic of UI storyboards. And finally, in addition to the literature, an overview is given covering features and missing features of 4 related tools that are used in the industry:
+And finally, in addition to the literature, an overview is given covering features and missing features of 4 related tools that are used in the industry:
 
 - Webkit inspector
 - Storybook JS
-- InterfaceBuilder Storyboards
 - Visual paradigm
+- InterfaceBuilder Storyboards
 
 ### Literature
 
@@ -42,10 +42,27 @@ In a similar review, anno 2018, Merino et al. [^Merino 2018] reconfirm the lack 
 
 Asenov discusses a novel open-source IDE called Envision in his doctoral thesis [^Asenov 2017]. It enables developers to use domain-specific visualizations that are directly and inseparably coupled to their corresponding code and are unified in the same IDE. The work contains multiple user studies which clearly show the benefits of these graphical visualizations for the understanding of, and interacting with code.
 
+// TODO
+
+- Chren 2019
+- Farias 2018 UML usage
+- wireframing
+
 [^Caserta 2010]: Caserta, Pierre, and Olivier Zendra. "Visualization of the static aspects of software: A survey." *IEEE transactions on visualization and computer graphics* 17.7 (2010): 913-933.APA
 [^Shahin 2014]: Shahin, Mojtaba, Peng Liang, and Muhammad Ali Babar. "A systematic review of software architecture visualization techniques." *Journal of Systems and Software* 94 (2014): 161-185.
 [^Merino 2018]: Merino, Leonel, et al. "A systematic literature review of software visualization evaluation." *Journal of Systems and Software* 144 (2018): 165-180.
 [^Asenov 2017]: Asenov, Dimitar. *Envision: reinventing the integrated development environment*. Diss. ETH Zurich, 2017.
+
+#### UI Storyboards
+
+The research papers that are probably the most closely related to this work are the ones on Doppio [^Chi 2015], DemoScript [^Chi 2016], and StoryDroid [^Chen 2019]. Doppio is a tool to visualize the flow between GUI screens that happens during user interactions. Its main drawbacks are that its users need to manually execute every possible user interaction path to create a storyboard visualization of them. Chi further developed this idea and also created DemoScript [^Chi 2016] which allows developers to write down textual scripts to define UI interaction flows. But the same drawback is still that in addition to the fully written app, one also needs to write these scripts to generate a storyboard.
+
+In that regard, Chen et al. [^Chen 2019] proposed some interesting new ways to overcome this barrier and automate the creation of storyboards. They discuss how stochastic GUI testing tools like STOAT [^Su 2017] can automatically create activity transition graphs (ATGs) from which a storyboard can be generated. They go even further and show how their own tool StoryDroid is even better at the creation of ATGs using only static language analysis. In addition to the effectiveness of the ATG extraction, they also perform user studies to show the usefulness of such storyboards for information retrieval of small applications. For the graphical representation of bigger graphs, however, "STORYDROID needs to provide a better strategy to visualize it" [^Chen 2019].
+
+[^Chi 2015]: Chi, Pei-Yu, Sen-Po Hu, and Yang Li. "Doppio: Tracking ui flows and code changes for app development." *Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems*. 2018.
+[^Chi 2016]: Chi, Pei-Yu, Yang Li, and Björn Hartmann. "Enhancing cross-device interaction scripting with interactive illustrations." *Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems*. 2016.
+[^Su 2017]: Su, Ting, et al. "Guided, stochastic model-based GUI testing of Android apps." Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering. 2017.
+[^Chen 2019]: Chen, Sen, et al. "Storydroid: Automated generation of storyboard for Android apps." *2019 IEEE/ACM 41st International Conference on Software Engineering (ICSE)*. IEEE, 2019.
 
 #### Graph navigation
 
@@ -70,17 +87,6 @@ To counter this, T. Green laid out a foundation with his work on the Cognitive D
 [^Green 1989]: Green, Thomas RG. "Cognitive dimensions of notations." *People and computers V* (1989): 443-460.
 [^Blackwell 2001]: Blackwell, Alan F., et al. "Cognitive dimensions of notations: Design tools for cognitive technology." *International Conference on Cognitive Technology*. Springer, Berlin, Heidelberg, 2001.
 [^Moody 2009]: Moody, Daniel. "The “physics” of notations: toward a scientific basis for constructing visual notations in software engineering." *IEEE Transactions on software engineering* 35.6 (2009): 756-779.
-
-#### UI Storyboards
-
-The research papers that are probably the most closely related to this work are the ones on Doppio [^Chi 2015], DemoScript [^Chi 2016], and StoryDroid [^Chen 2019]. Doppio is a tool to visualize the flow between GUI screens that happens during user interactions. Its main drawbacks are that its users need to manually execute every possible user interaction path to create a storyboard visualization of them. Chi further developed this idea and also created DemoScript [^Chi 2016] which allows developers to write down textual scripts to define UI interaction flows. But the same drawback is still that in addition to the fully written app, one also needs to write these scripts to generate a storyboard.
-
-In that regard, Chen et al. [^Chen 2019] proposed some interesting new ways to overcome this barrier and automate the creation of storyboards. They discuss how stochastic GUI testing tools like STOAT [^Su 2017] can automatically create activity transition graphs (ATGs) from which a storyboard can be generated. They go even further and show how their own tool StoryDroid is even better at the creation of ATGs using only static language analysis. In addition to the effectiveness of the ATG extraction, they also perform user studies to show the usefulness of such storyboards for information retrieval of small applications. For the graphical representation of bigger graphs, however, "STORYDROID needs to provide a better strategy to visualize it" [^Chen 2019].
-
-[^Chi 2015]: Chi, Pei-Yu, Sen-Po Hu, and Yang Li. "Doppio: Tracking ui flows and code changes for app development." *Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems*. 2018.
-[^Chi 2016]: Chi, Pei-Yu, Yang Li, and Björn Hartmann. "Enhancing cross-device interaction scripting with interactive illustrations." *Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems*. 2016.
-[^Su 2017]: Su, Ting, et al. "Guided, stochastic model-based GUI testing of Android apps." Proceedings of the 2017 11th Joint Meeting on Foundations of Software Engineering. 2017.
-[^Chen 2019]: Chen, Sen, et al. "Storydroid: Automated generation of storyboard for Android apps." *2019 IEEE/ACM 41st International Conference on Software Engineering (ICSE)*. IEEE, 2019.
 
 ### Industry
 
@@ -114,27 +120,27 @@ That is where [Storybook](https://storybook.js.org) [^Storybook 2021] comes into
 
 So storybooks solve the component isolation problem. They help to generate demo pages to show the visual representation of UI components and let you change properties in isolation to see how they affect this representation. Apart from that, it assembles all the individual components and allows you to produce one single documentation asset containing all your UI components.
 
-In fact, it is a very useful tool to document UI libraries but some problems remain. Firstly, in addition to developing the actual component, it requires you to manually write story definitions for every single one of your components you want to include in your storybook. And secondly, although there is a text search function, the components are listed in a linear way (i.e. a long list). When working on big projects this becomes a problem.
+In fact, it is a very useful tool to document UI libraries but some problems remain. Firstly, in addition to developing the actual component, it requires you to manually write story definitions for every single one of your components you want to include in your storybook. And secondly, although there is a text search function, the components are listed in a linear fashon (i.e. a long list). When working on big projects this becomes a problem.
 
 [^Storybook 2021]: https://storybook.js.org (May 1, 2021)
 
+#### Visual paradigm
+
+Visual paradigm is a modelling tool (similar to the more popular [^Ozkaya 2020] "Enterprise Architect" application) that covers many aspects in software development, from concept and architecture to implementation. They have some interesting automation tools to visualize implemented software code using UML diagrams to which they refer to as "round-trip engineering". It allows to generate code from UML models, in which developers can implement logic and then feed it back in to Visual Paradigm to update the UML diagrams when the implementation deviates from the original design. Although it requires some manual supervision, it is a great step towards keeping the UML design and the app's source code in sync.
+
+For UI design on the other hand, they offer both low and high fidelity wireframing tools. However, for the wireframing there is no such "round-trip engineering" feature. Which makes the wireframes to be completely disconnected from the actual source code implementation.
+
+![Wireflow diagram](../Media/Images/VPWireframing.png)
+
+[^Ozkaya 2020]: Ozkaya, Mert, and Ferhat Erata. "A survey on the practical use of UML for different software architecture viewpoints." *Information and Software Technology* 121 (2020): 106275.
+
 #### Interface Builder Storyboards
 
+The coupling between wireframes with actual app implementation brings us to Apple's IDE: Xcode. The official development environment to develop native applications for all of their platforms (iOS, iPadOS, macOS, tvOS).
 
+![A storyboard made with Interface Buidler](../Media/Images/IBStoryboard.png)
 
 - (+) good overview
 - (+) minimal manual doc cost
 - (-) greatly limits dynamic UIs
 
-#### Enterprise architect
-
-- (+) good overview (for UML tools)
-- (-) wireframes not coupled to code
-- (-) manual doc cost
-
-
-
-- TODO
-  - Chren 2019
-  - Farias 2018 UML usage
-  - Ozkaya 2020 Enterprise architect
