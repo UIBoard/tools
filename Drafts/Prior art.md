@@ -96,16 +96,45 @@ Finally we provide an overview of these tools' strengths and weaknesses.
 
 #### Web inspector
 
-To find initial focus points in code, the web inspector is probably the most used one. It has many variants developed by browser creators: firebug, webkit web inspector, chrome devtools, just to name a few. But they all have this common feature that enables us to click on any element of a web page and to inspect its source code.
+To find initial focus points in code, the web inspector is probably the most used one. It has many variants developed by browser vendors: firebug, WebKit web inspector, chrome dev tools, just to name a few. And they all have this common feature that enables us to click on any element of a web page and to inspect its source code.
+
+![WebInspector](../Media/Images/WebInspector.jpg)
+
+This method can be used on any web application that runs in a compatible browser and does not require any additional (documentation) efforts of the developer.
+
+Even though this is a powerful tool to trace back the source code of a visual element of your application, it has one major drawback. It needs the app to be fully running and brought into the correct state. For example, imagine a more complex stateful app that requires a network connection (to some database, etc.) and a login system and dynamic views based on previous interactions of the user. When you are looking for a visual component that might only seldomly appear in the application it can require you to manually perform a lot of steps to alter the state of your app until you can see the component you are looking for.
+
+In that case, we see that there might be a need for some proper isolation to quickly debug specific views of an application.
 
 #### StorybookJS
 
-#### Interface Builder storyboards
+That is where [Storybook](https://storybook.js.org) [^Storybook 2021] comes into play: Storybook is a tool for developing UI components in isolation. It simplifies building, documenting, and testing UIs.
+
+![Storybook](../Media/Images/Storybook.jpg)
+
+So storybooks solve the component isolation problem. They help to generate demo pages to show the visual representation of UI components and let you change properties in isolation to see how they affect this representation. Apart from that, it assembles all the individual components and allows you to produce one single documentation asset containing all your UI components.
+
+In fact, it is a very useful tool to document UI libraries but some problems remain. Firstly, in addition to developing the actual component, it requires you to manually write story definitions for every single one of your components you want to include in your storybook. And secondly, although there is a text search function, the components are listed in a linear way (i.e. a long list). When working on big projects this becomes a problem.
+
+[^Storybook 2021]: https://storybook.js.org (May 1, 2021)
+
+#### Interface Builder Storyboards
+
+
+
+- (+) good overview
+- (+) minimal manual doc cost
+- (-) greatly limits dynamic UIs
 
 #### Enterprise architect
 
-// TODO
+- (+) good overview (for UML tools)
+- (-) wireframes not coupled to code
+- (-) manual doc cost
 
-- Chren 2019 
-- Farias 2018 UML usage
-- Ozkaya 2020 Enterprise architect
+
+
+- TODO
+  - Chren 2019
+  - Farias 2018 UML usage
+  - Ozkaya 2020 Enterprise architect
