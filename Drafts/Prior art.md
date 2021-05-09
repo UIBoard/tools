@@ -114,33 +114,41 @@ In that case, we see that there might be a need for some proper isolation to qui
 
 #### StorybookJS
 
-That is where [Storybook](https://storybook.js.org) [^Storybook 2021] comes into play: Storybook is a tool for developing UI components in isolation. It simplifies building, documenting, and testing UIs.
+That is where [Storybook](https://storybook.js.org) [^Storybook 2021] comes into play: Storybook is a tool for documenting UI components in isolation. It simplifies building, documenting, and testing UIs. So it solves the isolation problem that was introduced with the web inspector.
 
 ![Storybook](../Media/Images/Storybook.jpg)
 
-So storybooks solve the component isolation problem. They help to generate demo pages to show the visual representation of UI components and let you change properties in isolation to see how they affect this representation. Apart from that, it assembles all the individual components and allows you to produce one single documentation asset containing all your UI components.
+It helps to generate demo pages to show the visual representation of UI components and let you change properties in isolation to see how they affect this representation. Apart from that, it assembles all the individual components and allows you to produce one single documentation asset containing all your UI components.
 
-In fact, it is a very useful tool to document UI libraries but some problems remain. Firstly, in addition to developing the actual component, it requires you to manually write story definitions for every single one of your components you want to include in your storybook. And secondly, although there is a text search function, the components are listed in a linear fashon (i.e. a long list). When working on big projects this becomes a problem.
+In fact, it is a very useful tool to document UI libraries but some problems for app development remain. Firstly, in addition to developing the actual component, it requires you to manually write story definitions for every single one of your components you want to include in your storybook. And secondly, although there is a text search function, the components are listed in a linear fashon (i.e. a long list). When working on big projects this becomes a problem.
 
 [^Storybook 2021]: https://storybook.js.org (May 1, 2021)
 
 #### Visual paradigm
 
-Visual paradigm is a modelling tool (similar to the more popular [^Ozkaya 2020] "Enterprise Architect" application) that covers many aspects in software development, from concept and architecture to implementation. They have some interesting automation tools to visualize implemented software code using UML diagrams to which they refer to as "round-trip engineering". It allows to generate code from UML models, in which developers can implement logic and then feed it back in to Visual Paradigm to update the UML diagrams when the implementation deviates from the original design. Although it requires some manual supervision, it is a great step towards keeping the UML design and the app's source code in sync.
+Visual paradigm is a modelling tool (similar to the more popular [^Ozkaya 2020] "Enterprise Architect" application) that covers many aspects in software development, from concept and architecture to implementation. They have some interesting automation tools to visualize implemented software code using UML diagrams to which they refer to as "round-trip engineering" [^Round-trip engineering]. It allows to generate code from UML models, in which developers can implement logic and then feed it back in to Visual Paradigm to update the UML diagrams to reflect the changed code. Although it requires some manual supervision, it is a great step towards keeping the UML design and the app's source code in sync.
 
-For UI design on the other hand, they offer both low and high fidelity wireframing tools. However, for the wireframing there is no such "round-trip engineering" feature. Which makes the wireframes to be completely disconnected from the actual source code implementation.
+For UI design on the other hand, they offer both low and high fidelity wireframing tools. Wireframes help a lot to identify visual aspects of applications and they follow an easy to read non-linear flow. However, for the wireframing there is no such "round-trip engineering" feature. Which makes the wireframes to be completely disconnected from the actual source code implementation.
 
 ![Wireflow diagram](../Media/Images/VPWireframing.png)
 
 [^Ozkaya 2020]: Ozkaya, Mert, and Ferhat Erata. "A survey on the practical use of UML for different software architecture viewpoints." *Information and Software Technology* 121 (2020): 106275.
 
+[^Round-trip engineering]: https://www.visual-paradigm.com/tutorials/visualcsharproundtrip.jsp (May 6, 2021)
+
 #### Interface Builder Storyboards
 
-The coupling between wireframes with actual app implementation brings us to Apple's IDE: Xcode. The official development environment to develop native applications for all of their platforms (iOS, iPadOS, macOS, tvOS).
+The coupling between wireframes and actual app implementation brings us to Apple's IDE: Xcode. The official development environment to develop native applications for all of their platforms (iOS, iPadOS, macOS, tvOS).
 
 ![A storyboard made with Interface Buidler](../Media/Images/IBStoryboard.png)
 
-- (+) good overview
-- (+) minimal manual doc cost
-- (-) greatly limits dynamic UIs
+Back in 1988 NextStep released the first version of Interface Builder, a technology that Apple would later adopt and that is still part of the developer toolset today. It is a visual UI builder that produces and manipulates XML files representing the UI of macOS and iOS applications. Until 2011 these XML files containing the user interfaces would live in separate files, one for each view. But that changed with the introduction of the Interface Builder Storyboards.
+
+A Storyboard connects al the different views (previously in separate files) using segues (the connecting lines) and assembles them all on one big canvas. It solves a lot of problems that we covered in the previous applications: it does not require the application to run (like the web inspector), you can easily visualise isolated components, it does not require the manual creation story definitions (like storybook does), and the storyboard visualisation is always in sync with the app implementation (unlike wireframes in other prototyping tools).
+
+Yet there are still some issues with the way Interface Builder and its storyboards function. One problem is the lack of dynamism. In many apps, you might want some dynamic views that only appear or change when certain criteria in your app logic are met. And although the interfaces that are generated using storyboards can be altered programatically at runtime, these changes and this logic are not visually represented in the storyboard editor. Which might result in many views that are added programatically and thus not visible in the storyboard.
+
+The other problem is the "huge storyboard" problem. When apps increase in size, the storyboards do too and can become unmageably big. This is not only a visual problem (of an overcluttered canvas) but also makes working together using version control very hard[^Storyboards git]. Which is probably the reason why a lot of companies just fall back to setting up UI views programatically in code.
+
+[^Storyboards git]: https://medium.com/flawless-app-stories/storyboard-or-no-storyboard-d3ce6eda91eb
 
