@@ -40,20 +40,20 @@ Later on, in 2014, Shahin et al. [^Shahin 2014] did another more systematic revi
 
 In a similar review, anno 2018, Merino et al. [^Merino 2018] reconfirm the lack of strong evaluations for software visualization techniques and call researchers in the field to collect evidence using controlled experiments on real-world open-source software systems that promote reproducibility and replicability.
 
+While the unified modelling language (UML) has been accepted and incorporated into many software engeneering course curricula worldwide [^Chren 2019], and although surveys in the industry show that UML can provide real benefits [^Ana 2015], the majority of the participants have never used UML[^Ana 2015][^Farias 2018]. Which might be due from the lack of automated workflows that keep the docs up-to-date [^Ana 2015].
+
 Asenov discusses a novel open-source IDE called Envision in his doctoral thesis [^Asenov 2017]. It enables developers to use domain-specific visualizations that are directly and inseparably coupled to their corresponding code and are unified in the same IDE. The work contains multiple user studies which clearly show the benefits of these graphical visualizations for the understanding of, and interacting with code.
-
-// TODO
-
-- Chren 2019
-- Farias 2018 UML usage
-- wireframing
 
 [^Caserta 2010]: Caserta, Pierre, and Olivier Zendra. "Visualization of the static aspects of software: A survey." *IEEE transactions on visualization and computer graphics* 17.7 (2010): 913-933.APA
 [^Shahin 2014]: Shahin, Mojtaba, Peng Liang, and Muhammad Ali Babar. "A systematic review of software architecture visualization techniques." *Journal of Systems and Software* 94 (2014): 161-185.
 [^Merino 2018]: Merino, Leonel, et al. "A systematic literature review of software visualization evaluation." *Journal of Systems and Software* 144 (2018): 165-180.
 [^Asenov 2017]: Asenov, Dimitar. *Envision: reinventing the integrated development environment*. Diss. ETH Zurich, 2017.
 
-#### UI Storyboards
+[^Chren 2019]: Chren, Stanislav, et al. "Mistakes in UML diagrams: analysis of student projects in a software engineering course." *2019 IEEE/ACM 41st International Conference on Software Engineering: Software Engineering Education and Training (ICSE-SEET)*. IEEE, 2019.
+[^Ana 2015]: Fernández-Sáez, Ana M., et al. "On the use of UML documentation in software maintenance: Results from a survey in industry." *2015 ACM/IEEE 18th International Conference on Model Driven Engineering Languages and Systems (MODELS)*. IEEE, 2015.
+[^Farias 2018]: Farias, Kleinner, et al. "On the UML use in the Brazilian industry: A state of the practice survey (S)." *SEKE*. 2018.
+
+##### Wireframing
 
 The research papers that are probably the most closely related to this work are the ones on Doppio [^Chi 2015], DemoScript [^Chi 2016], and StoryDroid [^Chen 2019]. Doppio is a tool to visualize the flow between GUI screens that happens during user interactions. Its main drawbacks are that its users need to manually execute every possible user interaction path to create a storyboard visualization of them. Chi further developed this idea and also created DemoScript [^Chi 2016] which allows developers to write down textual scripts to define UI interaction flows. But the same drawback is still that in addition to the fully written app, one also needs to write these scripts to generate a storyboard.
 
@@ -68,13 +68,12 @@ In that regard, Chen et al. [^Chen 2019] proposed some interesting new ways to o
 
 When working with larger codebases, documentation (especially graphical representations) can quickly become overcluttered and difficult to understand [^Erben 2005]. Hence, creating static visualizations of code is often not sufficient and thus some kind of interaction is needed.
 
-// TODO: Finding First Focus Points (Sillito 2006)
-
-One can see a software code base as a big graph of interconnected nodes. Efficient navigation in graphs has been covered in various research papers. Pienta et al. [^Pienta 2015] propose a graph sensemaking hierarchy that categorizes tools and techniques based on how to interact with large graph data and summarize and compare their strengths and weaknesses.
+One can see a software code base as a big graph of interconnected nodes. Sillitto et al. [^Sillito] also use different kinds of graph navigation to categorize questions programmers ask during programming tasks. Efficient navigation in graphs has been covered in various research papers. Pienta et al. [^Pienta 2015] propose a graph sensemaking hierarchy that categorizes tools and techniques based on how to interact with large graph data and summarize and compare their strengths and weaknesses.
 
 Erben et al. [^Erben 2005] discuss graph navigation techniques specially designed to navigate in codebases and propose new interactions for UML diagrams that are hierarchically layered. Similarly, KaitoroBase is a tool developed by Su et al. [^Su 2009] that provides assistance in non-linear exploration and visualization of software architecture documents and shows how grouping individual elements reduce cognitive load on the users.
 
 [^Erben 2005]: Erben, Nils, and K. Lohr. "SAB-The Software Architecture Browser." *3rd IEEE International Workshop on Visualizing Software for Understanding and Analysis*. IEEE, 2005.
+[^Sillito 2008]: Sillito, Jonathan, Gail C. Murphy, and Kris De Volder. "Asking and answering questions during a programming change task." IEEE Transactions on Software Engineering 34.4 (2008): 434-451.
 [^Pienta 2015]: Pienta, Robert, et al. "Scalable graph exploration and visualization: Sensemaking challenges and opportunities." *2015 International conference on Big Data and smart computing (BIGCOMP)*. IEEE, 2015.
 [^Su 2009]: Su, Moon Ting, Christian Hirsch, and John Hosking. "Kaitorobase: Visual exploration of software architecture documents." *2009 IEEE/ACM International Conference on Automated Software Engineering*. IEEE, 2009.
 
