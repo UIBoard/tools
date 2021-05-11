@@ -162,12 +162,12 @@ We summarize the reviewed apps based on support for 5 features:
 - **Code coupling**: how close the representation of the tool is coupled with the implementation (green means closer)
 - **Isolation**: the level of support for viewing the component in isolation (no need for: runtime, network connection, etc.)
 
-|                       | Web Inspector | Storybook | IB Storyboards | VP Wireframes | VP UML |
-| --------------------: | :-----------: | :-------: | :------------: | :-----------: | :----: |
-|            Automation |       🟢       |     🟠     |       🟢        |       🔴       |   🟢    |
-| Visual represantation |       🟢       |     🟢     |       🟢        |       🟢       |   🔴    |
-|            Navigation |       🔴       |     🔴     |       🟠        |       🟢       |   🟠    |
-|           Dynamic UIs |       🟢       |     🟢     |       🔴        |       🟢       |   🟢    |
-|         Code coupling |       🟢       |     🟢     |       🟢        |       🔴       |   🟢    |
-|             Isolation |       🔴       |     🟢     |       🟢        |       🟢       |   🟢    |
+|                       | Web Inspector | Storybook | VP Wireframes | VP UML | IB Storyboards |
+| --------------------: | :-----------: | :-------: | :-----------: | :----: | :------------: |
+|            Automation |       🟢       |     🟠     |       🔴       |   🟢    |       🟢        |
+| Visual represantation |       🟢       |     🟢     |       🟢       |   🔴    |       🟢        |
+|            Navigation |       🔴       |     🔴     |       🟢       |   🟠    |       🟠        |
+|           Dynamic UIs |       🟢       |     🟢     |       🟢       |   🟢    |       🔴        |
+|         Code coupling |       🟢       |     🟢     |       🔴       |   🟢    |       🟢        |
+|             Isolation |       🔴       |     🟢     |       🟢       |   🟢    |       🟢        |
 
