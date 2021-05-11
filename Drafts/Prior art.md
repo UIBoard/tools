@@ -109,7 +109,7 @@ This method can be used on any web application that runs in a compatible browser
 
 Even though this is a powerful tool to trace back the source code of a visual element of your application, it has one major drawback. It needs the app to be fully running and brought into the correct state. For example, imagine a more complex stateful app that requires a network connection (to some database, etc.) and a login system and dynamic views based on previous interactions of the user. When you are looking for a visual component that might only seldomly appear in the application it can require you to manually perform a lot of steps to alter the state of your app until you can see the component you are looking for.
 
-In that case, we see that there might be a need for some proper isolation to quickly debug specific views of an application.
+In that case, we see that there might be a need for some proper isolation to quickly get to specific (states of) views of an application.
 
 #### StorybookJS
 
@@ -137,7 +137,7 @@ For UI design, on the other hand, they offer both low- and high-fidelity wirefra
 
 #### Interface Builder Storyboards
 
-The coupling between wireframes and actual app implementation brings us to Apple's IDE: Xcode. The official development environment to develop native applications for all of their platforms (iOS, iPadOS, macOS, tvOS).
+The coupling between wireframes and actual app implementation brings us to Apple's IDE: Xcode. The official development environment to develop native applications for all of their platforms (iOS, iPadOS, macOS, tvOS, watchOS).
 
 ![A storyboard made with Interface Buidler](../Media/Images/IBStoryboard.png)
 
@@ -150,4 +150,22 @@ Yet there are still some issues with the way Interface Builder and its storyboar
 The other problem is the "huge storyboard" problem. When apps increase in size, the storyboards do too and can become unmanageably big. This is not only a visual problem (of an overcluttered canvas) but also makes working together using version control very hard[^Storyboards git]. This is probably the reason why a lot of companies just fall back to setting up UI views programmatically in code.
 
 [^Storyboards git]: https://medium.com/flawless-app-stories/storyboard-or-no-storyboard-d3ce6eda91eb
+
+#### Summary
+
+We summarize the reviewed apps based on support for 5 features:
+
+- **Automation**: level of support for automatic generation of visual representation
+- **Visual representation**: the level of resemblance between the graphical representation to tool creates vs. the graphical representation in the actual app.
+- **Navigation**: the level of support for navigation in large projects
+- **Dynamic UIs**: the level of support to visualize dynamic UIs
+- **Code coupling**: how close the representation of the tool is coupled with the implementation (green means closer)
+
+|                       | Storyboard | Wireframes (VP) | UML (VP) | Storybook | Web Inspector |
+| --------------------: | :--------: | :-------------: | :------: | :-------: | :-----------: |
+|            Automation |     🟢      |        🔴        |    🟢     |     🟠     |       🟢       |
+| Visual represantation |     🟠      |        🟢        |    🔴     |     🟢     |       🟢       |
+|            Navigation |     🟠      |        🟢        |    🟠     |     🔴     |       🔴       |
+|           Dynamic UIs |     🔴      |        🟢        |    🟢     |     🟢     |       🟢       |
+|         Code coupling |     🟢      |        🔴        |    🟢     |     🟢     |       🟢       |
 
