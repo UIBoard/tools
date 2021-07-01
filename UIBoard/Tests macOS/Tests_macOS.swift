@@ -2,10 +2,11 @@
 //  Tests_macOS.swift
 //  Tests macOS
 //
-//  Created by Damiaan on 01/07/2021.
+//  Created by Damiaan on 21/06/2021.
 //
 
 import XCTest
+import SwiftUI
 
 class Tests_macOS: XCTestCase {
 
@@ -21,6 +22,121 @@ class Tests_macOS: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
+
+	func testCollector() {
+		let viewCollector = ViewCollector()
+//		let previewCollector =
+		let view = ContentView().environment(\.viewCollector, viewCollector)
+		let render = view.render()
+		print(viewCollector.views)
+		print(ContentView.Body.self)
+
+		dump(type(of: ContentView()), name: "ContentView")
+
+		let attachment = XCTAttachment(image: render)
+		attachment.name = "content view"
+		attachment.lifetime = .keepAlways
+		add(attachment)
+	}
+
+	func testMultiplePreviews() {
+		let _ = ContentView_Previews.previews.render()
+		
+	}
+
+	struct BodyDeclaration {
+		let location: SymbolGraph.Symbol.Location?
+		let pathComponents: [String]
+		let parentUSRs: [String]
+		let parents: [String]
+
+		var locationDescription: String {
+			if let location = location {
+				return """
+				(
+				 file: \(URL(string: location.uri)!.path.debugDescription),
+				 position: (\(location.position.line + 1),\(location.position.character + 1))
+				)
+				"""
+			} else {
+				return "No location for: \(pathComponents)"
+			}
+		}
+	}
+
+	func testParseSymbolGraph() throws {
+		/// To generate symbol graph in terminal:
+		///  - Build source: `% xcodebuild -scheme "UIBoard (macOS)"`
+		///  - Look for build path: `.../DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug/`
+		///  - Extract symbol graph: `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-macos11 -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk`
+		let data = try Data(contentsOf: URL(fileURLWithPath: "/tmp/HelloWorld/Fruta.symbols.json"))
+
+		let graph = try JSONDecoder().decode(SymbolGraph.self, from: data)
+		XCTAssertEqual(graph.module.name, "Fruta")
+		let viewIDs = Set(graph.relationships.lazy.filter { relation in
+			relation.kind == .conformsTo &&
+			relation.target == "s:7SwiftUI4ViewP"
+		}.map(\.source))
+		let views = graph.symbols.filter { symbol in
+			symbol.kind == .struct &&
+			viewIDs.contains(symbol.identifier.usr)
+		}
+		print(views.count, "SwiftUI views:", views.map {$0.names.title})
+
+		let symbolTitles = Dictionary(graph.symbols.map{($0.identifier.usr, $0.names.title)}, uniquingKeysWith: {$1})
+		let viewStructMembers = graph.relationships.lazy.filter { relation in
+			relation.kind == .memberOf && views.contains { view in view.identifier.usr == relation.target }
+		}
+		let viewStructMemberUSRs = Dictionary(viewStructMembers.map{($0.source, [$0.target])}) { left, right in
+			left + right
+		}
+		let directBodies = graph.symbols.filter { symbol in
+			viewStructMemberUSRs.keys.contains(symbol.identifier.usr) && symbol.names.title == "body"
+		}.map { declaration -> BodyDeclaration in
+			let parentUSRs = viewStructMemberUSRs[declaration.identifier.usr]!
+			return BodyDeclaration(
+				location: declaration.location,
+				pathComponents: declaration.pathComponents,
+				parentUSRs: parentUSRs,
+				parents: parentUSRs.map{symbolTitles[$0]!}
+			)
+		}
+		print("View structs without body decl:", viewIDs.subtracting(directBodies.flatMap(\.parentUSRs)))
+		print("\(directBodies.count) bodies:")
+		print(directBodies.sorted{$0.location?.uri ?? "" < $1.location?.uri ?? ""}.map(\.locationDescription).joined(separator: ",\n"))
+
+		let previewIDs = Set(graph.relationships.lazy.filter { relation in
+			relation.kind == .conformsTo &&
+			relation.target == "s:7SwiftUI15PreviewProviderP"
+		}.map(\.source))
+		let previews = graph.symbols.filter { symbol in
+			symbol.kind == .struct &&
+			previewIDs.contains(symbol.identifier.usr)
+		}
+		print(previews.count, "SwiftUI previews:", previews.map {$0.names.title + ".previews"}.joined(separator: ", "))
+	}
+
+	func testRenderSwiftUI() {
+		let root = NavigationView {
+			Text("dinge")
+		}
+
+		let viewController = NSHostingController(rootView: root)
+		viewController.view.translatesAutoresizingMaskIntoConstraints = false
+
+		print(viewController.view.intrinsicContentSize, viewController.sizeThatFits(in: CGSize(width: 200, height: 200)))
+	}
+
+	func testViewTypes() {
+		let instance = ContainerA()
+		print(instance.body)
+		var cursor: ViewBoxProtocol = ViewBox(content: instance)
+		print(cursor.viewType)
+		while let body = cursor.body {
+			cursor = body
+			print(cursor.viewType)
+		}
+	}
 
     func testExample() throws {
         // UI tests must launch the application that they test.
@@ -39,4 +155,33 @@ class Tests_macOS: XCTestCase {
             }
         }
     }
+}
+
+protocol ViewBoxProtocol {
+	var body: ViewBoxProtocol? {get}
+	var viewType: Any.Type {get}
+}
+
+struct ViewBox<B: View>: ViewBoxProtocol {
+	let content: B
+	var body: ViewBoxProtocol? {
+		guard B.Body.self != Never.self else { return nil }
+		return ViewBox<B.Body>(content: content.body)
+	}
+	var viewType: Any.Type { type(of: content) }
+}
+
+struct ContainerA: View {
+	var body: some View {
+		HStack {
+			Text("container")
+			InnerA()
+		}
+	}
+
+	struct InnerA: View {
+		var body: some View {
+			Text("Inner A")
+		}
+	}
 }
