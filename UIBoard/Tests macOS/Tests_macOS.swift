@@ -23,12 +23,49 @@ class Tests_macOS: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
+	func testCollectPreviews() {
+		let previewCollector = PreviewTagger.Collector()
+		let viewCollector = ViewCollector()
+		let taggedPreviews = HStack{ContentView_Previews
+			.previews
+			.environment(\.viewCollector, viewCollector)
+			.background(
+				PreviewTagger(collector: previewCollector)
+			)}
+
+		let attachment = XCTAttachment(image: taggedPreviews.render())
+		attachment.name = "content view"
+		attachment.lifetime = .keepAlways
+		add(attachment)
+
+		print("default collector", Unmanaged.passUnretained(ViewCollector.defaultValue).toOpaque())
+		print("root collector", Unmanaged.passUnretained(viewCollector).toOpaque())
+		print(previewCollector.previewItems)
+		print(viewCollector.description)
+
+		struct PreviewTagger: View {
+			let collector: Collector
+			var body: some View {
+				GeometryReader(content: read)
+			}
+
+			func read(proxy: GeometryProxy) -> some View {
+				collector.previewItems.append(proxy.frame(in: .global))
+				return Circle().stroke().foregroundColor(.blue)
+			}
+
+			class Collector {
+				var previewItems = [CGRect]()
+			}
+		}
+	}
+
 	func testCollector() {
 		let viewCollector = ViewCollector()
 //		let previewCollector =
 		let view = ContentView().environment(\.viewCollector, viewCollector)
 		let render = view.render()
-		print(viewCollector.views)
+		print(viewCollector.children)
 		print(ContentView.Body.self)
 
 		dump(type(of: ContentView()), name: "ContentView")
@@ -41,7 +78,6 @@ class Tests_macOS: XCTestCase {
 
 	func testMultiplePreviews() {
 		let _ = ContentView_Previews.previews.render()
-		
 	}
 
 	struct BodyDeclaration {
