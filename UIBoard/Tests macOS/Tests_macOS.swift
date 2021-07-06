@@ -97,55 +97,17 @@ class Tests_macOS: XCTestCase {
 		///  - Build source: `% xcodebuild -scheme "UIBoard (macOS)"`
 		///  - Look for build path: `.../DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug/`
 		///  - Extract symbol graph: `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-macos11 -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk`
-		let data = try Data(contentsOf: URL(fileURLWithPath: "/tmp/HelloWorld/Fruta.symbols.json"))
+		var graph = try ViewGraph(symbolgraphURL: URL(fileURLWithPath: "/tmp/HelloWorld/Fruta.symbols.json"))
 
-		let graph = try JSONDecoder().decode(SymbolGraph.self, from: data)
-		XCTAssertEqual(graph.module.name, "Fruta")
-		let viewIDs = Set(graph.relationships.lazy.filter { relation in
-			relation.kind == .conformsTo &&
-			relation.target == "s:7SwiftUI4ViewP"
-		}.map(\.source))
-		let views = graph.symbols.filter { symbol in
-			symbol.kind == .struct &&
-			viewIDs.contains(symbol.identifier.usr)
-		}
-		print(views.count, "SwiftUI views:", views.map {$0.names.title})
+		print("Previews:", graph.previews.map(\.names.title))
+		print("Views", graph.views.map(\.names.title))
 
-		let symbolTitles = Dictionary(graph.symbols.map{($0.identifier.usr, $0.names.title)}, uniquingKeysWith: {$1})
-		let viewStructMembers = graph.relationships.lazy.filter { relation in
-			relation.kind == .memberOf && views.contains { view in view.identifier.usr == relation.target }
-		}
-		let viewStructMemberUSRs = Dictionary(viewStructMembers.map{($0.source, [$0.target])}) { left, right in
-			left + right
-		}
-		let directBodies = graph.symbols.filter { symbol in
-			viewStructMemberUSRs.keys.contains(symbol.identifier.usr) && symbol.names.title == "body"
-		}.map { declaration -> BodyDeclaration in
-			let parentUSRs = viewStructMemberUSRs[declaration.identifier.usr]!
-			return BodyDeclaration(
-				location: declaration.location,
-				pathComponents: declaration.pathComponents,
-				parentUSRs: parentUSRs,
-				parents: parentUSRs.map{symbolTitles[$0]!}
+		print(
+			"View structs without body decl:",
+			graph.viewIDs.subtracting(
+				graph.directBodies.flatMap(\.info.parentUSRs)
 			)
-		}
-		print("View structs without body decl:", viewIDs.subtracting(directBodies.flatMap(\.parentUSRs)))
-		print("\(directBodies.count) bodies:")
-		print(directBodies.sorted{$0.location?.uri ?? "" < $1.location?.uri ?? ""}.map(\.locationDescription).joined(separator: ",\n"))
-
-		print(graph.symbols.filter { symbol in
-			viewStructMemberUSRs.keys.contains(symbol.identifier.usr) && symbol.names.title == "body"
-		}.map(\.identifier.usr))
-
-		let previewIDs = Set(graph.relationships.lazy.filter { relation in
-			relation.kind == .conformsTo &&
-			relation.target == "s:7SwiftUI15PreviewProviderP"
-		}.map(\.source))
-		let previews = graph.symbols.filter { symbol in
-			symbol.kind == .struct &&
-			previewIDs.contains(symbol.identifier.usr)
-		}
-		print(previews.count, "SwiftUI previews:", previews.map {$0.names.title + ".previews"}.joined(separator: ", "))
+		)
 	}
 
 	func testRenderSwiftUI() {

@@ -29,10 +29,10 @@ func captureViews<Container: View>(in container: Container) -> [PreviewSnapshot]
 
 	let canvas = taggedPreviews.cgImage!
 	let scaler = CGAffineTransform(scaleX: taggedPreviews.scale, y: taggedPreviews.scale)
-	let snapshots = viewCollector.children.map { preview in
+	let snapshots = previewCollector.previewItems.map { preview in
 		PreviewSnapshot(
-			info: preview,
-			image: SystemImage(cgImage: canvas.cropping(to: preview.visibleArea.applying(scaler))!)
+			info: .init(visibleArea: .zero, type: AnyTypeInfo(type: EmptyView.self), collector: ViewCollector.defaultValue),
+			image: SystemImage(cgImage: canvas.cropping(to: preview.applying(scaler))!)
 		)
 	}
 
