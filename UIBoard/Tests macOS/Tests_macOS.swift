@@ -8,6 +8,8 @@
 import XCTest
 import SwiftUI
 
+import Foundation
+
 class Tests_macOS: XCTestCase {
 
     override func setUpWithError() throws {
@@ -24,51 +26,41 @@ class Tests_macOS: XCTestCase {
     }
 
 	func testCollectPreviews() {
-		let previewCollector = PreviewTagger.Collector()
-		let viewCollector = ViewCollector()
-		let taggedPreviews = HStack{ContentView_Previews
-			.previews
-			.environment(\.viewCollector, viewCollector)
-			.background(
-				PreviewTagger(collector: previewCollector)
-			)}
+//		for snapshot in captureViews(in: ContentView_Previews.previews) {
+//			let attachment = XCTAttachment(image: snapshot.image)
+//			attachment.name = snapshot.info.type.description
+//			attachment.lifetime = .keepAlways
+//			add(attachment)
+//		}
+	}
 
-		let attachment = XCTAttachment(image: taggedPreviews.render())
-		attachment.name = "content view"
-		attachment.lifetime = .keepAlways
-		add(attachment)
+	func testParseGenericType() {
+		print(extractOwnModuleTypes(from: ContentView.Content.self))
+		print(dump(ContentView()))
+	}
 
-		print("default collector", Unmanaged.passUnretained(ViewCollector.defaultValue).toOpaque())
-		print("root collector", Unmanaged.passUnretained(viewCollector).toOpaque())
-		print(previewCollector.previewItems)
-		print(viewCollector.description)
-
-		struct PreviewTagger: View {
-			let collector: Collector
-			var body: some View {
-				GeometryReader(content: read)
-			}
-
-			func read(proxy: GeometryProxy) -> some View {
-				collector.previewItems.append(proxy.frame(in: .global))
-				return Circle().stroke().foregroundColor(.blue)
-			}
-
-			class Collector {
-				var previewItems = [CGRect]()
-			}
+	func extractOwnModuleTypes(from type: Any.Type) -> [String.SubSequence] {
+		let typeString = String(reflecting: type)
+		var types = [String.SubSequence]()
+		let modulePrefix = "Tests_macOS."
+		var cursor = typeString.startIndex
+		let separators = Set<Character>([")", ",", ">", "<"])
+		while cursor < typeString.endIndex, let prefixRange = typeString.range(of: modulePrefix, range: cursor..<typeString.endIndex) {
+			let end = typeString[prefixRange.upperBound...].firstIndex { separators.contains($0) } ?? typeString.endIndex
+			types.append(typeString[prefixRange.lowerBound..<end])
+			cursor = typeString.index(after: end)
 		}
+		return types
 	}
 
 	func testCollector() {
 		let viewCollector = ViewCollector()
-//		let previewCollector =
 		let view = ContentView().environment(\.viewCollector, viewCollector)
 		let render = view.render()
 		print(viewCollector.children)
 		print(ContentView.Body.self)
 
-		dump(type(of: ContentView()), name: "ContentView")
+		print(String(reflecting: ContentView.Content.self))
 
 		let attachment = XCTAttachment(image: render)
 		attachment.name = "content view"
@@ -140,6 +132,10 @@ class Tests_macOS: XCTestCase {
 		print("View structs without body decl:", viewIDs.subtracting(directBodies.flatMap(\.parentUSRs)))
 		print("\(directBodies.count) bodies:")
 		print(directBodies.sorted{$0.location?.uri ?? "" < $1.location?.uri ?? ""}.map(\.locationDescription).joined(separator: ",\n"))
+
+		print(graph.symbols.filter { symbol in
+			viewStructMemberUSRs.keys.contains(symbol.identifier.usr) && symbol.names.title == "body"
+		}.map(\.identifier.usr))
 
 		let previewIDs = Set(graph.relationships.lazy.filter { relation in
 			relation.kind == .conformsTo &&

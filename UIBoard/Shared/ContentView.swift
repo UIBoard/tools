@@ -19,8 +19,13 @@ struct ContentView: TaggedView {
 			ViewB()
 				.tabItem { Label("Banaan", systemImage: "b.circle") }
 				.tag(2)
-		}
+
+		}.sheet(isPresented: .constant(false)) {Special()}
 	}
+}
+
+struct Special: View {
+	let body = EmptyView()
 }
 
 struct ViewX: TaggedView {
