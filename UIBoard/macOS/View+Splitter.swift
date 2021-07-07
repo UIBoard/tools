@@ -24,8 +24,8 @@ func captureViews<Container: View>(in container: Container) -> [PreviewSnapshot]
 		}
 		let childContainer = ViewCollector(children: containedViews)
 		return PreviewSnapshot(
-			info: childContainer,
-			image: taggedPreviews.cropping(to: preview),
+			taggedPreviews.cropping(to: preview),
+			tags: childContainer,
 			scale: 1
 		)
 	}
