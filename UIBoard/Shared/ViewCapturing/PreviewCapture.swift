@@ -20,7 +20,7 @@ struct PreviewTagger: View {
 
 	func read(proxy: GeometryProxy) -> some View {
 		collector.previewItems.append(proxy.frame(in: .global))
-		return Ellipse().stroke().foregroundColor(.blue)
+		return Color.clear
 	}
 
 	class Collector {

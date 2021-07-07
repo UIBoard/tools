@@ -57,7 +57,7 @@ struct Tagger<V: View>: View {
 				.init(visibleArea: frame, type: id, collector: collector)
 			)
 		}
-		return Rectangle().opacity(0.01)
+		return Color.clear
 	}
 }
 
