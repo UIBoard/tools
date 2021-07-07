@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PreviewSnapshot {
-	let info: ViewCollector.Child
+	let info: ViewCollector
 	let image: SystemImage
 }
 

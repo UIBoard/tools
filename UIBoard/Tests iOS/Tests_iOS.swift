@@ -22,7 +22,7 @@ class Tests_iOS: XCTestCase {
     func testExample() throws {
 		for snapshot in captureViews(in: ContentView_Previews.previews) {
 			let attachment = XCTAttachment(image: snapshot.image)
-			attachment.name = snapshot.info.type.description
+			attachment.name = snapshot.info.children.first?.type.description
 			attachment.lifetime = .keepAlways
 			add(attachment)
 		}

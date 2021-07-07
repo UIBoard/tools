@@ -39,6 +39,6 @@ struct ContentView_Previews: PreviewProvider {
 		ContentView()
 		ContentView(selectedTab: 2).colorScheme(.dark)
 		Text("Only text")
-		ViewX()
+		ViewX().padding()
 	}
 }

@@ -7,38 +7,38 @@
 
 import SwiftUI
 
-func captureViews<Container: View>(in container: Container) -> [PreviewSnapshot] {
+func captureViews<Container: View>(in container: Container, name: String = "no name") -> [PreviewSnapshot] {
 	let previewCollector = PreviewTagger.Collector()
 	let _ = ZStack {
 		container.background( PreviewTagger(collector: previewCollector) )
 	}.frame(width: 375, height: 812).render()
 
-	print(previewCollector.previewItems.count, "preview items")
+	print(previewCollector.previewItems.count, "found preview items")
 	let capturedCount = CGFloat(previewCollector.previewItems.count)
 
 	previewCollector.previewItems.removeAll(keepingCapacity: true)
 	let viewCollector = ViewCollector()
-	let taggedPreviews = HStack(spacing: 10) {
+	let taggedPreviews = HStack(spacing: 300) {
 		container
 			.environment(\.viewCollector, viewCollector)
 			.overlay( PreviewTagger(collector: previewCollector) )
 			.frame(maxWidth: 375, maxHeight: 812)
 	}
-	.frame(width: 375 * capturedCount + 10 * (capturedCount-1), height: 814)
+	.frame(width: (375 + 300) * capturedCount, height: 814)
 	.render()
 
 	let canvas = taggedPreviews.cgImage!
 	let scaler = CGAffineTransform(scaleX: taggedPreviews.scale, y: taggedPreviews.scale)
-	let snapshots = previewCollector.previewItems.map { preview in
-		PreviewSnapshot(
-			info: .init(visibleArea: .zero, type: AnyTypeInfo(type: EmptyView.self), collector: ViewCollector.defaultValue),
+	let snapshots = previewCollector.previewItems.map { preview -> PreviewSnapshot in
+		let containedViews = viewCollector.children.filter { view in
+			preview.contains(view.visibleArea)
+		}
+		let childContainer = ViewCollector(children: containedViews)
+		return PreviewSnapshot(
+			info: childContainer,
 			image: SystemImage(cgImage: canvas.cropping(to: preview.applying(scaler))!)
 		)
 	}
-
-	print(previewCollector.previewItems)
-	print(viewCollector.description)
-	print(taggedPreviews.scale)
 
 	return snapshots
 }

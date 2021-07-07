@@ -64,9 +64,11 @@ struct Tagger<V: View>: View {
 final class ViewCollector: ObservableObject, EnvironmentKey, CustomStringConvertible {
 	static let defaultValue = ViewCollector()
 
-	fileprivate(set) var children = [Child]()
+	fileprivate(set) var children: [Child]
 
-	public init() {}
+	public init(children: [Child] = []) {
+		self.children = children
+	}
 
 	var isDefault: Bool { self === ViewCollector.defaultValue }
 
@@ -97,22 +99,5 @@ extension EnvironmentValues {
 	var viewCollector: ViewCollector {
 		get { self[ViewCollector.self] }
 		set { self[ViewCollector.self] = newValue }
-	}
-}
-
-struct OtherPreview: PreviewProvider {
-	static var previews: some View {
-		HStack {
-			ContentView_Previews.previews
-				.overlay(Ellipse().foregroundColor(.orange).opacity(0.2))
-				.frame(maxWidth: 200, maxHeight: 200)
-		}.frame(height: 200)
-
-		VStack{
-			ContentView_Previews
-				.previews
-				.overlay(Ellipse().foregroundColor(.orange).opacity(0.2))
-				.frame(maxWidth: 200, maxHeight: 200)
-		}
 	}
 }
