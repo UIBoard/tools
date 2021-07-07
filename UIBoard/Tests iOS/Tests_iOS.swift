@@ -9,6 +9,8 @@ import XCTest
 @testable import UIBoard
 import SwiftUI
 
+import UniformTypeIdentifiers
+
 class Tests_iOS: XCTestCase {
 
     override func setUpWithError() throws {
@@ -20,11 +22,20 @@ class Tests_iOS: XCTestCase {
     }
 
     func testExample() throws {
+		let encoder = JSONEncoder()
+		encoder.outputFormatting = .prettyPrinted
 		for snapshot in captureViews(in: ContentView_Previews.previews) {
-			let attachment = XCTAttachment(image: snapshot.image)
-			attachment.name = snapshot.info.children.first?.type.description
-			attachment.lifetime = .keepAlways
-			add(attachment)
+			try XCTContext.runActivity(named: snapshot.info.children.first?.type.description ?? "no description") { preview in
+				let attachment = XCTAttachment(image: snapshot.image)
+				attachment.name = "View"
+				attachment.lifetime = .keepAlways
+				preview.add(attachment)
+
+				let info = XCTAttachment(data: try encoder.encode(snapshot.info), uniformTypeIdentifier: UTType.json.identifier)
+				info.name = "Info"
+				info.lifetime = .keepAlways
+				preview.add(info)
+			}
 		}
     }
 

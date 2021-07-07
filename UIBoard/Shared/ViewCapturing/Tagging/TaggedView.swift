@@ -54,14 +54,14 @@ struct Tagger<V: View>: View {
 		let frame = proxy.frame(in: .global)
 		if !frame.isEmpty {
 			parent.children.append(
-				.init(visibleArea: frame, type: id, collector: collector)
+				.init(type: id, visibleArea: frame, collector: collector)
 			)
 		}
 		return Color.clear
 	}
 }
 
-final class ViewCollector: ObservableObject, EnvironmentKey, CustomStringConvertible {
+final class ViewCollector: ObservableObject, EnvironmentKey, CustomStringConvertible, Encodable {
 	static let defaultValue = ViewCollector()
 
 	fileprivate(set) var children: [Child]
@@ -88,9 +88,9 @@ final class ViewCollector: ObservableObject, EnvironmentKey, CustomStringConvert
 			.joined(separator: "\n")
 	}
 
-	struct Child {
-		let visibleArea: CGRect
+	struct Child: Encodable {
 		let type: AnyTypeInfo
+		let visibleArea: CGRect
 		let collector: ViewCollector
 	}
 }

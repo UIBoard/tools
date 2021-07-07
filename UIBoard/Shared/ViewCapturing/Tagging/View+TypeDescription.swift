@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-protocol TypeInfoProtocol: CustomStringConvertible {
+protocol TypeInfoProtocol: CustomStringConvertible, CustomDebugStringConvertible {
 	var id: ObjectIdentifier {get}
 }
 
@@ -18,6 +18,7 @@ struct TypeInfo<T>: TypeInfoProtocol {
 	}
 
 	var description: String { String(describing: T.self) }
+	var debugDescription: String { String(reflecting: T.self) }
 }
 
 struct AnyTypeInfo: TypeInfoProtocol {
@@ -30,6 +31,14 @@ struct AnyTypeInfo: TypeInfoProtocol {
 	var content: TypeInfoProtocol { storage as! TypeInfoProtocol }
 	var id: ObjectIdentifier { content.id }
 	var description: String { content.description }
+	var debugDescription: String { content.debugDescription }
+}
+
+extension AnyTypeInfo: Encodable {
+	func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+		try container.encode(debugDescription)
+	}
 }
 
 extension AnyTypeInfo: Hashable {

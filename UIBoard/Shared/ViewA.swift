@@ -13,8 +13,15 @@ struct ViewA: TaggedView {
 		VStack {
 			Text("View A")
 			ViewX()
+			ViewY()
 		}
     }
+
+	struct ViewY: TaggedView {
+		var content: Text {
+			Text("view Y (nested)")
+		}
+	}
 }
 
 struct ViewA_Previews: PreviewProvider {
