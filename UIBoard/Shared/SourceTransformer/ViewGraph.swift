@@ -25,6 +25,10 @@ struct ViewGraph {
 		viewIDs.contains(symbol.identifier.usr)
 	}
 
+	private (set) lazy var nonGenericViews = views.lazy.filter { symbol in
+		symbol.swiftGenerics?.parameters?.isEmpty ?? true
+	}
+
 	private (set) lazy var viewStructMembers: LazyFilterSequence<LazySequence<[SymbolGraph.Edge]>.Elements> = {
 		let views = self.views
 		return graph.relationships.lazy.filter { relation in

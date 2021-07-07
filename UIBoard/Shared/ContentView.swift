@@ -20,7 +20,7 @@ struct ContentView: TaggedView {
 				.tabItem { Label("Banaan", systemImage: "b.circle") }
 				.tag(2)
 
-		}.sheet(isPresented: .constant(false)) {Special()}
+		}.sheet(isPresented: .constant(false)) {ViewA.ViewY()}
 	}
 }
 

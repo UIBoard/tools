@@ -41,13 +41,14 @@ class Tests_macOS: XCTestCase {
 
 	func extractOwnModuleTypes(from type: Any.Type) -> [String.SubSequence] {
 		let typeString = String(reflecting: type)
+		print(typeString)
 		var types = [String.SubSequence]()
-		let modulePrefix = "Tests_macOS."
+		let modulePrefix = "UIBoard."
 		var cursor = typeString.startIndex
 		let separators = Set<Character>([")", ",", ">", "<"])
 		while cursor < typeString.endIndex, let prefixRange = typeString.range(of: modulePrefix, range: cursor..<typeString.endIndex) {
 			let end = typeString[prefixRange.upperBound...].firstIndex { separators.contains($0) } ?? typeString.endIndex
-			types.append(typeString[prefixRange.lowerBound..<end])
+			types.append(typeString[prefixRange.upperBound..<end])
 			cursor = typeString.index(after: end)
 		}
 		return types
