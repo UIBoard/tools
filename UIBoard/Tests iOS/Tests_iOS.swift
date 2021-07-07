@@ -25,7 +25,7 @@ class Tests_iOS: XCTestCase {
 		let encoder = JSONEncoder()
 		encoder.outputFormatting = .prettyPrinted
 		for snapshot in captureViews(in: ContentView_Previews.previews) {
-			try XCTContext.runActivity(named: snapshot.info.children.first?.type.description ?? "no description") { preview in
+			try XCTContext.runActivity(named: snapshot.tags.children.first?.type.description ?? "no description") { preview in
 				let attachment = XCTAttachment(image: snapshot.image)
 				attachment.name = "View"
 				attachment.lifetime = .keepAlways

@@ -8,8 +8,21 @@
 import SwiftUI
 
 struct PreviewSnapshot {
-	let info: ViewCollector
 	let image: SystemImage
+	let info: Info
+
+	init(_ image: SystemImage, tags: ViewCollector, scale: CGFloat) {
+		self.image = image
+		info = Info(tags: tags, scale: scale)
+	}
+
+	struct Info: Encodable {
+		let tags: ViewCollector
+		let scale: CGFloat
+	}
+
+	var tags: ViewCollector { info.tags }
+	var scale: CGFloat { info.scale }
 }
 
 struct PreviewTagger: View {

@@ -18,10 +18,15 @@ func captureViews<Container: View>(in container: Container) -> [PreviewSnapshot]
 	}
 	.render()
 
-	let snapshots = viewCollector.children.map { preview in
-		PreviewSnapshot(
-			info: preview,
-			image: taggedPreviews.cropping(to: preview.visibleArea)
+	let snapshots = previewCollector.previewItems.map { preview -> PreviewSnapshot in
+		let containedViews = viewCollector.children.filter { view in
+			preview.contains(view.visibleArea)
+		}
+		let childContainer = ViewCollector(children: containedViews)
+		return PreviewSnapshot(
+			info: childContainer,
+			image: taggedPreviews.cropping(to: preview),
+			scale: 1
 		)
 	}
 
