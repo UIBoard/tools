@@ -7,21 +7,36 @@
 
 import SwiftUI
 
-protocol PreviewContainerProtocol {
-	static func capturePreviews() -> [PreviewSnapshot]
-	static var type: AnyTypeInfo {get}
-}
+func decompose(viewTypeDictionary: [String: ViewTypeInfoProtocol.Type]) -> [AnyViewTypeInfo: [ViewTypeInfoProtocol.Type]] {
+	var genericCompositionRelations = [AnyViewTypeInfo: [ViewTypeInfoProtocol.Type]]()
+	for viewInfo in viewTypeDictionary.values {
+		visit(viewInfo)
+	}
 
-enum PreviewContainer<Provider: PreviewProvider>: PreviewContainerProtocol {
-	static func capturePreviews() -> [PreviewSnapshot] { captureViews(in: Provider.previews, name: String(describing: Provider.self)) }
-	static var type: AnyTypeInfo { AnyTypeInfo(type: Provider.self) }
-}
+	func visit(_ viewInfo: ViewTypeInfoProtocol.Type) {
+		let erasedType = AnyViewTypeInfo(content: viewInfo)
+		guard !genericCompositionRelations.keys.contains(erasedType) else { return }
+		for parameter in viewInfo.extractContainedTypesOf(module: "Fruta") {
+			guard let subType = viewTypeDictionary[String(parameter)] else { continue }
+			add(type: subType, to: erasedType)
+			visit(subType)
+		}
+	}
 
-protocol ViewTypeInfoProtocol {
-	static var type: AnyTypeInfo {get}
-	static var bodyType: AnyTypeInfo { get }
+	func add(type: ViewTypeInfoProtocol.Type, to parent: AnyViewTypeInfo) {
+		if genericCompositionRelations.keys.contains(parent) {
+			genericCompositionRelations[parent]!.append(type)
+		} else {
+			genericCompositionRelations[parent] = [type]
+		}
+	}
 
-	static func extractContainedTypesOf(module: String) -> [String.SubSequence]
+	for (parent, children) in genericCompositionRelations {
+		print(parent.content.type.debugDescription + ":")
+		print("\t" + children.map { $0.type.debugDescription } .joined(separator: ", ") )
+	}
+
+	return genericCompositionRelations
 }
 
 enum ViewTypeInfo<ViewType: View>: ViewTypeInfoProtocol {
@@ -51,6 +66,23 @@ func extractGenericParametersOf(module moduleName: String, from type: Any.Type) 
 	return types
 }
 
+protocol PreviewContainerProtocol {
+	static func capturePreviews() -> [PreviewSnapshot]
+	static var type: AnyTypeInfo {get}
+}
+
+enum PreviewContainer<Provider: PreviewProvider>: PreviewContainerProtocol {
+	static func capturePreviews() -> [PreviewSnapshot] { captureViews(in: Provider.previews, name: String(describing: Provider.self)) }
+	static var type: AnyTypeInfo { AnyTypeInfo(type: Provider.self) }
+}
+
+protocol ViewTypeInfoProtocol {
+	static var type: AnyTypeInfo {get}
+	static var bodyType: AnyTypeInfo { get }
+
+	static func extractContainedTypesOf(module: String) -> [String.SubSequence]
+}
+
 struct AnyViewTypeInfo: Hashable {
 	let content: ViewTypeInfoProtocol.Type
 
@@ -60,5 +92,12 @@ struct AnyViewTypeInfo: Hashable {
 
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(content.type)
+	}
+}
+
+extension AnyViewTypeInfo: Encodable {
+	func encode(to encoder: Encoder) throws {
+		var container = encoder.singleValueContainer()
+		try container.encode(content.type)
 	}
 }

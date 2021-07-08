@@ -19,17 +19,6 @@ extension TaggedView {
 	}
 }
 
-class AnyViewInstance: Equatable {
-	static func == (lhs: AnyViewInstance, rhs: AnyViewInstance) -> Bool {
-		lhs === rhs
-	}
-
-	let content: AnyView
-	init<Content: View>(_ view: Content) {
-		content = AnyView(view)
-	}
-}
-
 extension View {
 	func tagVisibleAreaWithTagger<V: View>(@ViewBuilder content: () -> V) -> some View {
 		let collector = ViewCollector()
