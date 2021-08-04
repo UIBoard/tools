@@ -24,6 +24,22 @@ struct ContentView: TaggedView {
 	}
 }
 
+extension View {
+	func dinge() {}
+}
+
+struct X: View {}
+
+extension X {
+	var body: some View { Text("") }
+
+	var lolding: Int {0}
+}
+
+extension ContentView {
+	var body: Text {Text("")}
+}
+
 struct Special: View {
 	let body = EmptyView()
 }

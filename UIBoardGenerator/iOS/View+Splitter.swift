@@ -37,7 +37,8 @@ func captureViews<Container: View>(in container: Container, name: String = "no n
 		return PreviewSnapshot(
 			SystemImage(cgImage: canvas.cropping(to: preview.applying(scaler))!),
 			tags: childContainer,
-			scale: taggedPreviews.scale
+			scale: taggedPreviews.scale,
+			viewport: preview
 		)
 	}
 

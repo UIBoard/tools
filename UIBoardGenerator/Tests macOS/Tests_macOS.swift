@@ -97,18 +97,18 @@ class Tests_macOS: XCTestCase {
 		/// To generate symbol graph in terminal:
 		///  - Build source: `% xcodebuild -scheme "UIBoard (macOS)"`
 		///  - Look for build path: `.../DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug/`
-		///  - Extract symbol graph: `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-macos11 -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk`
-		var graph = try ViewGraph(symbolgraphURL: URL(fileURLWithPath: "/tmp/HelloWorld/Fruta.symbols.json"))
+		///  - Extract symbol graph (macOS target): `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-macos11 -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk`
+		///  - Extract symbol graph (for iOS simulator): `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-ios14.5-simulator -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bvmegcdfxvxctuejnmhadawwyoqv/Build/Products/Debug-iphonesimulator -sdk` /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator14.5.sdk
+		var graph = try ViewGraph(symbolgraphURL: URL(fileURLWithPath: "/tmp/HelloWorld/MovieSwift.symbols.json"))
 
-		print("Previews:", graph.previews.map(\.names.title))
-		print("Views", graph.views.map(\.names.title))
+		print(graph.previews.count, "Previews:", graph.previews.map(\.names.title))
+		print(graph.views.count, "Views", graph.views.map(\.names.title))
+		print(graph.nonGenericViewStructs.count, "Non-generic view structs", graph.nonGenericViewStructs.map(\.names.title).joined(separator: ", "))
 
-		print(
-			"View structs without body decl:",
-			graph.viewIDs.subtracting(
-				graph.directBodies.flatMap(\.info.parentUSRs)
-			)
+		let bodylessViewStructs = graph.viewIDs.subtracting(
+			graph.viewBodies.flatMap(\.info.parentUSRs)
 		)
+		print("\(bodylessViewStructs.count) view structs without body decl:", bodylessViewStructs)
 	}
 
 	func testRenderSwiftUI() {

@@ -24,6 +24,8 @@
 <script>
 	export let description
 
+	console.log(description)
+
 	const recipeListPreviewProvider = description.visualDecomposition[22]
 
 	function regionsIn(preview) {

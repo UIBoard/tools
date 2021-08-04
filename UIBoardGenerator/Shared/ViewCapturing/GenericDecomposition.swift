@@ -66,16 +66,6 @@ func extractGenericParametersOf(module moduleName: String, from type: Any.Type) 
 	return types
 }
 
-protocol PreviewContainerProtocol {
-	static func capturePreviews() -> [PreviewSnapshot]
-	static var type: AnyTypeInfo {get}
-}
-
-enum PreviewContainer<Provider: PreviewProvider>: PreviewContainerProtocol {
-	static func capturePreviews() -> [PreviewSnapshot] { captureViews(in: Provider.previews, name: String(describing: Provider.self)) }
-	static var type: AnyTypeInfo { AnyTypeInfo(type: Provider.self) }
-}
-
 protocol ViewTypeInfoProtocol {
 	static var type: AnyTypeInfo {get}
 	static var bodyType: AnyTypeInfo { get }

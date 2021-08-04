@@ -8,9 +8,8 @@
 import SwiftSyntax
 import Foundation
 
-func wrapViews(symbolgraphURL: URL) throws {
-	var graph = try ViewGraph(symbolgraphURL: symbolgraphURL)
-	let files = Dictionary(graph.directBodies.map {($0.uri, [$0.info])}) { $0 + $1 }
+func wrapViews(of graph: inout ViewGraph) throws {
+	let files = Dictionary(graph.viewBodies.map {($0.uri, [$0.info])}) { $0 + $1 }
 
 	for (file, bodies) in files {
 		print("Transforming file", file)

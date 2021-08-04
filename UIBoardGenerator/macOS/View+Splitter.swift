@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-func captureViews<Container: View>(in container: Container) -> [PreviewSnapshot] {
+func captureViews<Container: View>(in container: Container, name: String = "no name") -> [PreviewSnapshot] {
 	let previewCollector = PreviewTagger.Collector()
 	let viewCollector = ViewCollector()
 	let taggedPreviews = HStack(spacing: 10) {
@@ -26,7 +26,8 @@ func captureViews<Container: View>(in container: Container) -> [PreviewSnapshot]
 		return PreviewSnapshot(
 			taggedPreviews.cropping(to: preview),
 			tags: childContainer,
-			scale: 1
+			scale: 1,
+			viewport: preview
 		)
 	}
 

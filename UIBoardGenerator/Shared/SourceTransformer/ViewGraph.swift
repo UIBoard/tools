@@ -21,15 +21,14 @@ struct ViewGraph {
 	}.map(\.source))
 
 	private (set) lazy var views = graph.symbols.filter { symbol in
-		symbol.kind == .struct &&
 		viewIDs.contains(symbol.identifier.usr)
 	}
 
-	private (set) lazy var nonGenericViews = views.lazy.filter { symbol in
-		symbol.swiftGenerics?.parameters?.isEmpty ?? true
+	private (set) lazy var nonGenericViewStructs = views.lazy.filter { symbol in
+		symbol.kind == .struct && symbol.swiftGenerics?.parameters?.isEmpty ?? true
 	}
 
-	private (set) lazy var viewStructMembers: LazyFilterSequence<LazySequence<[SymbolGraph.Edge]>.Elements> = {
+	private (set) lazy var viewMembers: LazyFilterSequence<LazySequence<[SymbolGraph.Edge]>.Elements> = {
 		let views = self.views
 		return graph.relationships.lazy.filter { relation in
 			relation.kind == .memberOf && views.contains { view in view.identifier.usr == relation.target }
@@ -37,12 +36,12 @@ struct ViewGraph {
 	}()
 
 	private (set) lazy var viewStructMemberUSRs = Dictionary(
-		viewStructMembers.map { ($0.source, [$0.target])}) { $0 + $1 }
+		viewMembers.map { ($0.source, [$0.target])}) { $0 + $1 }
 
 	private (set) lazy var symbolTitles = Dictionary(graph.symbols.map{($0.identifier.usr, $0.names.title)}) {$1}
 
-	private (set) lazy var directBodies = graph.symbols.filter { symbol in
-		viewStructMemberUSRs.keys.contains(symbol.identifier.usr) && symbol.names.title == "body"
+	private (set) lazy var viewBodies = graph.symbols.filter { symbol in
+		viewStructMemberUSRs.keys.contains(symbol.identifier.usr) && symbol.names.title == "body" && symbol.kind == .instanceProperty
 	}.compactMap { declaration -> BodyDeclaration? in
 		let parentUSRs = viewStructMemberUSRs[declaration.identifier.usr]!
 		guard let location = declaration.location else {

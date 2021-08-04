@@ -11,14 +11,15 @@ struct PreviewSnapshot {
 	let image: SystemImage
 	let info: Info
 
-	init(_ image: SystemImage, tags: ViewCollector, scale: CGFloat) {
+	init(_ image: SystemImage, tags: ViewCollector, scale: CGFloat, viewport: CGRect) {
 		self.image = image
-		info = Info(tags: tags, scale: scale)
+		info = Info(tags: tags, scale: scale, viewport: viewport)
 	}
 
 	struct Info: Encodable {
 		let tags: ViewCollector
 		let scale: CGFloat
+		let viewport: CGRect
 	}
 
 	var tags: ViewCollector { info.tags }
@@ -39,4 +40,14 @@ struct PreviewTagger: View {
 	class Collector {
 		var previewItems = [CGRect]()
 	}
+}
+
+protocol PreviewContainerProtocol {
+	static func capturePreviews() -> [PreviewSnapshot]
+	static var type: AnyTypeInfo {get}
+}
+
+enum PreviewContainer<Provider: PreviewProvider>: PreviewContainerProtocol {
+	static func capturePreviews() -> [PreviewSnapshot] { captureViews(in: Provider.previews, name: String(describing: Provider.self)) }
+	static var type: AnyTypeInfo { AnyTypeInfo(type: Provider.self) }
 }

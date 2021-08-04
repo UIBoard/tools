@@ -7,7 +7,7 @@
 
 import Foundation
 func createTypeTable(viewGraph graph: inout ViewGraph) -> String {
-	let views = graph.nonGenericViews
+	let views = graph.nonGenericViewStructs
 	let viewIdentifiers = views.map { $0.pathComponents.joined(separator: ".") }
 	let viewReferences = viewIdentifiers.map { "ViewTypeInfo<\($0)>.self" }
 
