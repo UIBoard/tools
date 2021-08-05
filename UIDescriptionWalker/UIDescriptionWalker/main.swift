@@ -57,7 +57,11 @@ func walk(descriptionURL: URL) throws {
 	print("----\n")
 
 	print("Overview tree")
-	print("\n", description.createOverview().first!, separator: "")
+	let overview = description.createOverview()
+	print(overview)
+	let encoder = JSONEncoder()
+	let overviewData = try encoder.encode(overview)
+	print(String(data: overviewData, encoding: .utf8)!)
 }
 
 enum Walk {
