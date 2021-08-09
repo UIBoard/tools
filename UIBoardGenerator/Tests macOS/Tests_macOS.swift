@@ -98,17 +98,22 @@ class Tests_macOS: XCTestCase {
 		///  - Build source: `% xcodebuild -scheme "UIBoard (macOS)"`
 		///  - Look for build path: `.../DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug/`
 		///  - Extract symbol graph (macOS target): `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-macos11 -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bdegdoemqxirnddplflnavwnqkbf/Build/Products/Debug -sdk /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.0.sdk`
-		///  - Extract symbol graph (for iOS simulator): `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-ios14.5-simulator -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bvmegcdfxvxctuejnmhadawwyoqv/Build/Products/Debug-iphonesimulator -sdk` /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator14.5.sdk
-		var graph = try ViewGraph(symbolgraphURL: URL(fileURLWithPath: "/tmp/HelloWorld/MovieSwift.symbols.json"))
+		///  - Extract symbol graph (for iOS simulator): `% swift symbolgraph-extract -minimum-access-level internal -skip-synthesized-members -pretty-print -module-name UIBoard -target x86_64-apple-ios14.5-simulator -output-dir /tmp/HelloWorld -I /Users/damiaan/Library/Developer/Xcode/DerivedData/UIBoard-bvmegcdfxvxctuejnmhadawwyoqv/Build/Products/Debug-iphonesimulator -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator14.5.sdk`
+		var graph = try ViewGraph(symbolgraphURL: URL(fileURLWithPath: "/tmp/HelloWorld/MovieSwift-skip-synthesised-members.symbols.json"))
 
-		print(graph.previews.count, "Previews:", graph.previews.map(\.names.title))
-		print(graph.views.count, "Views", graph.views.map(\.names.title))
+		print(graph.previews.count, "Previews:", graph.previews.map(\.names.title).sorted())
+		print(graph.views.count, "Views", graph.views.map(\.names.title).sorted())
 		print(graph.nonGenericViewStructs.count, "Non-generic view structs", graph.nonGenericViewStructs.map(\.names.title).joined(separator: ", "))
 
-		let bodylessViewStructs = graph.viewIDs.subtracting(
+		let bodylessViewStructIDs = graph.viewIDs.subtracting(
 			graph.viewBodies.flatMap(\.info.parentUSRs)
 		)
-		print("\(bodylessViewStructs.count) view structs without body decl:", bodylessViewStructs)
+		let bodylessViewStructs = graph.graph.symbols.filter {bodylessViewStructIDs.contains($0.identifier.usr)}
+		print("\(bodylessViewStructIDs.count) view structs without body decl:\n", bodylessViewStructs.map{"\t\($0.identifier.usr)\t"+$0.location!.uri.dropFirst(74)}.sorted().joined(separator: "\n"))
+
+		var sgraph = try ViewGraph(symbolgraphURL: URL(fileURLWithPath: "/tmp/HelloWorld/MovieSwift.symbols.json"))
+		let synthesisedBodyURLs = Set(sgraph.viewBodies.map(\.uri)).subtracting(Set(graph.viewBodies.map(\.uri)))
+		print(synthesisedBodyURLs.count, "synthesised: ", synthesisedBodyURLs)
 	}
 
 	func testRenderSwiftUI() {

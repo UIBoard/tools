@@ -13,6 +13,7 @@
 		7486B6C626B557B700BFB0F3 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7486B6C526B557B700BFB0F3 /* main.swift */; };
 		7486B6CD26B5582700BFB0F3 /* BoardDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7486B6CC26B5582700BFB0F3 /* BoardDescription.swift */; };
 		7486B6CF26B55B9B00BFB0F3 /* Roots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7486B6CE26B55B9B00BFB0F3 /* Roots.swift */; };
+		74A4BB2626BF993D00658182 /* CircularData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74A4BB2526BF993C00658182 /* CircularData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +35,7 @@
 		7486B6C526B557B700BFB0F3 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		7486B6CC26B5582700BFB0F3 /* BoardDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardDescription.swift; sourceTree = "<group>"; };
 		7486B6CE26B55B9B00BFB0F3 /* Roots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Roots.swift; sourceTree = "<group>"; };
+		74A4BB2526BF993C00658182 /* CircularData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				7486B6C526B557B700BFB0F3 /* main.swift */,
+				74A4BB2526BF993C00658182 /* CircularData.swift */,
 				7486B6CC26B5582700BFB0F3 /* BoardDescription.swift */,
 				745B2CAA26BAE64C00BE3E8F /* CompactTree.swift */,
 				745B2CAC26BAF1C000BE3E8F /* PreviewMap.swift */,
@@ -141,6 +144,7 @@
 			files = (
 				7486B6C626B557B700BFB0F3 /* main.swift in Sources */,
 				7486B6CF26B55B9B00BFB0F3 /* Roots.swift in Sources */,
+				74A4BB2626BF993D00658182 /* CircularData.swift in Sources */,
 				7486B6CD26B5582700BFB0F3 /* BoardDescription.swift in Sources */,
 				745B2CAD26BAF1C000BE3E8F /* PreviewMap.swift in Sources */,
 				745B2CAB26BAE64C00BE3E8F /* CompactTree.swift in Sources */,

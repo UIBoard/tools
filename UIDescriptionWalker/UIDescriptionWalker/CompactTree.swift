@@ -25,7 +25,7 @@ extension BoardDescription {
 				parents: [],
 				visualChildrenOf: visibleChildrenOf
 			)
-			return removeRedundantCompositionNodes(from: .linked(name: root, children: links))
+			return summarise( .linked(name: root, children: links) )
 		}
 	}
 
@@ -34,10 +34,10 @@ extension BoardDescription {
 		if let genericChildren = genericDecomposition[view] {
 			result.reserveCapacity(genericChildren.count)
 			var visitedChildren = Set<String>()
+			let newParents = parents.union([view])
 			for child in genericChildren {
-				guard !parents.contains(view) && !visitedChildren.contains(child) && child != view else { continue }
+				guard !newParents.contains(child) && !visitedChildren.contains(child) else { continue }
 				visitedChildren.insert(child)
-				let newParents = parents.union([view])
 				if visibilityList.contains(child) {
 					let links = getLinks(from: child, visibilityList: visibilityList, parents: newParents, visualChildrenOf: visualChildrenOf)
 					result.append(.composed(name: child, children: links))
@@ -50,7 +50,44 @@ extension BoardDescription {
 		return result
 	}
 
-	func removeRedundantCompositionNodes(from tree: Node) -> Node {
+	struct InvertedNode: Codable {
+		let id: String
+		let parentIds: Set<String>
+	}
+	
+	static func invert(tree: [Node], using parents: inout [String: Set<String>], visited: inout Set<String>) {
+		for node in tree {
+			if !parents.keys.contains(node.name) {
+				parents[node.name] = Set()
+			}
+			if !visited.contains(node.name) {
+				visited.insert(node.name)
+				for child in node.children {
+					if parents.keys.contains(child.name) {
+						parents[child.name]!.insert(node.name)
+					} else {
+						parents[child.name] = Set(CollectionOfOne(node.name))
+					}
+				}
+				invert(tree: node.children, using: &parents, visited: &visited)
+			}
+		}
+	}
+
+	static func invert(tree: [Node]) -> [InvertedNode] {
+		var dictionary = [String: Set<String>]()
+		var visited = Set<String>()
+		invert(tree: tree, using: &dictionary, visited: &visited)
+		return dictionary.map(InvertedNode.init)
+	}
+
+	func summarise(_ tree: Node) -> Node {
+		let optimisation1 = removeLeafCompositionNodes(from: tree)
+		let optimisation2 = removeOnlyChildCompositionNodes(from: optimisation1)
+		return optimisation2
+	}
+
+	func removeLeafCompositionNodes(from tree: Node) -> Node {
 		var pathsToVisit: [[Int]] = [[]]
 		var optimizedTree = tree
 		while let path = pathsToVisit.popLast() {
@@ -67,6 +104,24 @@ extension BoardDescription {
 				let pathsToChildren = node.children.indices.map {index in path + [index]}
 				pathsToVisit.append(contentsOf: pathsToChildren)
 			}
+		}
+		return optimizedTree
+	}
+
+	func removeOnlyChildCompositionNodes(from tree: Node) -> Node {
+		var pathsToVisit: [[Int]] = [[]]
+		var optimizedTree = tree
+		while let path = pathsToVisit.popLast() {
+			// Remove composition nodes that have no siblings
+			var children = optimizedTree[path].children
+			while children.count == 1 && children[0].isVisibleInParent {
+				children = children[0].children
+				optimizedTree[path].children = children
+			}
+
+			// Visit children
+			let pathsToChildren = children.indices.map {index in path + [index]}
+			pathsToVisit.append(contentsOf: pathsToChildren)
 		}
 		return optimizedTree
 	}

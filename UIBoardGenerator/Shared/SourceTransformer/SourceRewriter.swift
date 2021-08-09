@@ -12,8 +12,9 @@ func wrapViews(of graph: inout ViewGraph) throws {
 	let files = Dictionary(graph.viewBodies.map {($0.uri, [$0.info])}) { $0 + $1 }
 
 	for (file, bodies) in files {
-		print("Transforming file", file)
-		let sourceURL = URL(string: file)!
+		print("Transforming", file)
+		let path = file.dropFirst(7)
+		let sourceURL = URL(fileURLWithPath: String(path))
 		let sourceTree = try SyntaxParser.parse(sourceURL)
 		print("\tbody declarations:", bodies.map { $0.pathComponents.joined(separator: "→") }.joined(separator: ", ") )
 		let locationTransformer = SourceLocationConverter(file: file, tree: sourceTree)
