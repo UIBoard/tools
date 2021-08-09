@@ -6,7 +6,15 @@
 	<nav>Navigation bar</nav>
 	<section class="ViewTree-container">
 		<div class="ParentViews-container">Parents</div>
-		<div class="MainComponent-container">Main</div>
+		<div class="MainComponent-container">
+			<div class="geometry-reader">
+				<svg viewBox="0 0 200 300">
+					<rect x="0" y="0" width="100%" height="100%" fill="white"></rect>
+					<circle r=95 cx=100 cy=150></circle>
+				</svg>	
+			</div>
+			<div class="show-code">Show code</div>
+		</div>
 		<div class="GenericChildren-container">Children</div>
 	</section>
 	<footer>Footer</footer>
@@ -49,6 +57,25 @@
 	.MainComponent-container {
 		flex-grow: 0;
 		margin: 0 1em;
+		width: 30vw;
+
+		display: flex;
+		flex-direction: column;
+	}
+
+	.MainComponent-container > .show-code {
+		text-align: right;
+	}
+
+	.MainComponent-container > .geometry-reader {
+		position: relative;
+		flex-grow: 1;
+	}
+
+	.MainComponent-container > .geometry-reader > svg {
+		position: absolute;
+		width: 100%;
+		height: 100%;
 	}
 
 	.GenericChildren-container {
