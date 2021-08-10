@@ -3,7 +3,7 @@
 </svelte:head>
 
 <script>
-	import Chart from '$lib/Tree/index.svelte'
+	import Chart from '$lib/UI/Tree/index.svelte'
 	
 	const parents = 'abcdefgh'.split("")
 	const visualChildren = 'abcdefghijklmn'.split("")

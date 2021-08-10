@@ -15,7 +15,11 @@ let frutaURL = URL(fileURLWithPath: frutaPath)
 let moviePath = prefix + "MovieSwift/index.json"
 let movieURL = URL(fileURLWithPath: moviePath)
 
-try walk(descriptionURL: movieURL)
+import struct CoreGraphics.CGRect
+
+try print(String(data: JSONEncoder().encode(CGRect(x: 0, y: 1, width: 10, height: 20)), encoding: .utf8)!)
+
+//try walk(descriptionURL: movieURL)
 //print(BoardDescription.invert(tree: BoardDescription.circular.createOverview()))
 
 //let description = try decoder.decode(BoardDescription.self, from: Data(contentsOf: frutaURL))
