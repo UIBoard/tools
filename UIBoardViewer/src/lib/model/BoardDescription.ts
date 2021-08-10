@@ -7,27 +7,27 @@ export module UIBoard {
 
 	export type GenericComposition = {[identifier: string]: string[]}
 
-	export interface PreviewProvider {
+	export type PreviewProvider = {
 		identifier: string
 		previews: Preview[]
 	}
 
-	export interface Preview {
+	export type Preview = {
 		render: string
 		info: PreviewInfo
 	}
 
-	export interface PreviewInfo {
+	export type PreviewInfo = {
 		tags: ViewCollector
 		scale: number
 		viewport: CGRect
 	}
 
-	export interface ViewCollector {
-		children: [CollectedView]
+	export type ViewCollector = {
+		children: CollectedView[]
 	}
 
-	export interface CollectedView {
+	export type CollectedView = {
 		type: string
 		visibleArea: CGRect
 		collector: ViewCollector

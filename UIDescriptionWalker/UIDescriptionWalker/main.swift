@@ -17,9 +17,7 @@ let movieURL = URL(fileURLWithPath: moviePath)
 
 import struct CoreGraphics.CGRect
 
-try print(String(data: JSONEncoder().encode(CGRect(x: 0, y: 1, width: 10, height: 20)), encoding: .utf8)!)
-
-//try walk(descriptionURL: movieURL)
+try walk(descriptionURL: movieURL)
 //print(BoardDescription.invert(tree: BoardDescription.circular.createOverview()))
 
 //let description = try decoder.decode(BoardDescription.self, from: Data(contentsOf: frutaURL))
@@ -65,14 +63,14 @@ func walk(descriptionURL: URL) throws {
 
 	print("----\n")
 
-//	print("Overview tree")
-//	let overview = description.createOverview()
+	print("Overview tree")
+	let overview = description.createOverview()
 //	print(overview)
 	let encoder = JSONEncoder()
-//	let overviewData = try encoder.encode(overview)
-//	print(String(data: overviewData, encoding: .utf8)!)
+	let overviewData = try encoder.encode(overview)
+	print(String(data: overviewData, encoding: .utf8)!)
 
-	try print(String(data: encoder.encode(description.genericDecomposition.map{BoardDescription.Node.linked(name: $0, children: Set($1).map{.init(name: $0, isVisibleInParent: false, children: [])})}), encoding: .utf8)!)
+//	try print(String(data: encoder.encode(description.genericDecomposition.map{BoardDescription.Node.linked(name: $0, children: Set($1).map{.init(name: $0, isVisibleInParent: false, children: [])})}), encoding: .utf8)!)
 
 //	try print(String(data: encoder.encode(BoardDescription.invert(tree: overview)), encoding: .utf8)!)
 //	print(overview.description.components(separatedBy: .newlines).count)
