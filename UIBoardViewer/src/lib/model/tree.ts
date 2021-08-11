@@ -2,18 +2,8 @@ import type {UIBoard} from './BoardDescription'
 import { createPreviewProviderDictionary, createViewCompositionMap, PreviewComposition } from './previews'
 import { getRoots } from './roots'
 
-type TreeCreationArguments = {
-	root: string
-	depthLimit: number
-	visualChildMap: Map<string, Set<string>>
-	genericChildMap: UIBoard.GenericComposition
-}
-
 export function createOverview(description: UIBoard.Description) {
-	const previewMap = createPreviewProviderDictionary(description.visualDecomposition)
-	const previewDecomposition = createViewCompositionMap(previewMap)
-	const visualChildMap = new Map(Array.from(previewDecomposition.entries(), extractViewnames))
-	const roots = getRoots(description.genericDecomposition)
+	const {roots, visualChildMap} = createCompactTreeTraversalMaps(description)
 	return Array.from(roots, expandToNode)
 
 	function expandToNode(view: string): Node {
@@ -29,6 +19,37 @@ export function createOverview(description: UIBoard.Description) {
 			isVisibleInParent: false
 		}
 	}
+}
+
+type SubTreeCreationArguments = {
+	root: string
+	depthLimit: number
+	visualChildMap: Map<string, Set<string>>
+	genericChildMap: UIBoard.GenericComposition
+}
+
+export function createSubTreeFrom({root, depthLimit, visualChildMap, genericChildMap}: SubTreeCreationArguments) {
+	return {
+		name: root,
+		children: getLinksFrom({
+			view: root,
+			visibilityList: visualChildMap.get(root) ?? new Set(),
+			parents: new Set(),
+			visualChildMap,
+			genericChildMap: genericChildMap,
+			depthLimit,
+			currentDepth: 1
+		}),
+		isVisibleInParent: false
+	}
+}
+
+export function createCompactTreeTraversalMaps(moduleDescription: UIBoard.Description) {
+	const previewMap = createPreviewProviderDictionary(moduleDescription.visualDecomposition)
+	const previewDecomposition = createViewCompositionMap(previewMap)
+	const visualChildMap = new Map(Array.from(previewDecomposition.entries(), extractViewnames))
+	const roots = getRoots(moduleDescription.genericDecomposition)
+	return {previewMap, previewDecomposition, visualChildMap, roots}
 
 	function extractViewnames([name, previewComposition]: [string, PreviewComposition]): [string, Set<string>] {
 		return [name, previewComposition.viewNames]
@@ -59,10 +80,10 @@ export function getLinksFrom({view, visibilityList, parents, visualChildMap, gen
 			const linkConstructionArguments = {view: child, parents: newParents, visualChildMap, genericChildMap, depthLimit, currentDepth: currentDepth+1}
 			if (visibilityList.has(child)) {
 				const links = getLinksFrom({visibilityList, ...linkConstructionArguments})
-				result.push({name: child, children: links, isVisibleInParent: false})
+				result.push({name: child, children: links, isVisibleInParent: true})
 			} else {
 				const links = getLinksFrom({visibilityList: visualChildMap.get(child) ?? new Set(), ...linkConstructionArguments})
-				result.push({name: child, children: links, isVisibleInParent: true})
+				result.push({name: child, children: links, isVisibleInParent: false})
 			}
 		}
 	}

@@ -24,18 +24,29 @@
 </script>
 
 <script>
-	import { createOverview } from '$lib/model/tree';
+	import { createCompactTreeTraversalMaps, createOverview, createSubTreeFrom } from '$lib/model/tree';
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
 
 	export let board, mainViewIdentifier, mostDiversePreview
 	// @ts-ignore
 	const overview = createOverview(board.moduleDescription)
+
+	function loadSmallTree() {
+		const maps = createCompactTreeTraversalMaps(board.moduleDescription)
+		return createSubTreeFrom({
+			root: mainViewIdentifier,
+			depthLimit: 3,
+			visualChildMap: maps.visualChildMap,
+			genericChildMap: board.moduleDescription.genericDecomposition
+		})
+	}
 	// console.log('overview', overview)
 </script>
 
 <h1>Browser</h1>
 {#if mainViewIdentifier}
 	<h2>{mainViewIdentifier}</h2>
+	<SimpleTree data={loadSmallTree()}></SimpleTree>
 	<ul>
 		{#each board.moduleDescription.genericDecomposition[mainViewIdentifier] as relatedView}
 			<li><a href="{mainViewIdentifier}/{relatedView}">{relatedView}</a></li>
@@ -54,7 +65,9 @@
 		{/each}
 	</ul>
 
+	{#if overview && overview.length > 0}
 	<SimpleTree data={overview[0]}></SimpleTree>
+	{/if}
 {/if}
 
 <style>

@@ -31,13 +31,6 @@
 		const container = d3.select(svgElement)
 			.attr('viewBox', [0,topBound, width, height])
 
-		container
-			.append('rect')
-			.attr('class', 'background')
-			.attr('y', topBound)
-			.attr('width', width)
-			.attr('height', height)
-
 		const group = container
 			.append('g')
 			.attr("class", 'tree')
@@ -61,6 +54,7 @@
 		const circles = nodes
 			.append('circle')
 			.attr('r', 5)
+			.attr('class', node => node.data.isVisibleInParent ? 'visible' : '')
 
 		const text = nodes
 			.append('text')
@@ -74,9 +68,8 @@
 
 <style>
 	svg {
-		position: absolute;
-		width: 100%;
-		height: 100%;
+		width: 90vw;
+		height: 90vh;
 	}
 
 	svg :global(.background) {
@@ -91,6 +84,10 @@
 
 	svg :global(.nodes circle) {
 		fill: rgb(173, 173, 173);
+	}
+
+	svg :global(.nodes circle.visible) {
+		fill: rgb(255, 62, 62);
 	}
 
 	svg :global(.nodes text) {
