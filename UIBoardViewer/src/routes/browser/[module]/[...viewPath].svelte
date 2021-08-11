@@ -24,9 +24,13 @@
 </script>
 
 <script>
+	import { createOverview } from '$lib/model/tree';
+	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
+
 	export let board, mainViewIdentifier, mostDiversePreview
-	console.log(board)
-	console.log(mostDiversePreview)
+	// @ts-ignore
+	const overview = createOverview(board.moduleDescription)
+	// console.log('overview', overview)
 </script>
 
 <h1>Browser</h1>
@@ -49,6 +53,8 @@
 			<li><a href="{board.moduleDescription.module}/{root}">{root}</a></li>
 		{/each}
 	</ul>
+
+	<SimpleTree data={overview[0]}></SimpleTree>
 {/if}
 
 <style>

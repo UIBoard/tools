@@ -21,8 +21,9 @@
 </script>
 
 
-<script>
-	export let description
+<script lang="ts">
+	import type { UIBoard } from '$lib/model/BoardDescription'
+	export let description: UIBoard.Description
 
 	console.log(description)
 

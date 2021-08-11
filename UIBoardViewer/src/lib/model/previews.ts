@@ -1,4 +1,4 @@
-import {UIBoard} from './BoardDescription'
+import type {UIBoard} from './BoardDescription'
 
 export function createPreviewProviderDictionary(visualDecomposition: UIBoard.PreviewProvider[]): PreviewProviderDecomposition {
 	const previewsPerView = new Map<string,PreviewWithProvider[]>()
