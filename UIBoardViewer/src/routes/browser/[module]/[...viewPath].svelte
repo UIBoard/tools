@@ -31,14 +31,17 @@
 	// @ts-ignore
 	const overview = createOverview(board.moduleDescription)
 
-	function loadSmallTree() {
+	function loadSmallTree(root) {
+		console.log(root)
 		const maps = createCompactTreeTraversalMaps(board.moduleDescription)
-		return createSubTreeFrom({
-			root: mainViewIdentifier,
-			depthLimit: 3,
-			visualChildMap: maps.visualChildMap,
+		const subtree = createSubTreeFrom({
+			root,
+			depthLimit: 4,
+			visibleChildMap: maps.visibleChildMap,
 			genericChildMap: board.moduleDescription.genericDecomposition
 		})
+		console.log(subtree)
+		return subtree
 	}
 	// console.log('overview', overview)
 </script>
@@ -46,7 +49,7 @@
 <h1>Browser</h1>
 {#if mainViewIdentifier}
 	<h2>{mainViewIdentifier}</h2>
-	<SimpleTree data={loadSmallTree()}></SimpleTree>
+	<SimpleTree data={loadSmallTree(mainViewIdentifier)}></SimpleTree>
 	<ul>
 		{#each board.moduleDescription.genericDecomposition[mainViewIdentifier] as relatedView}
 			<li><a href="{mainViewIdentifier}/{relatedView}">{relatedView}</a></li>
