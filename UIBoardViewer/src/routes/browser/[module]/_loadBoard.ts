@@ -1,10 +1,22 @@
 import {getRoots} from '$lib/model/trees/roots'
 import {createPreviewProviderDictionary, createViewCompositionMap} from '$lib/model/previewMaps'
+import type {PreviewProviderDecomposition, PreviewDecomposition} from '$lib/model/previewMaps'
 import { createGenericParentMap } from '$lib/model/browserContext'
+import type { UIBoard } from '$lib/model/BoardDescription'
 
 const boardDescriptions = new Map()
 
-export async function loadBoard(moduleName, fetch) {
+export type EnhancedBoard = {
+	moduleDescription: UIBoard.Description,
+	roots: Set<string>
+	previewProviders: PreviewProviderDecomposition
+	mostDiversePreviews: PreviewDecomposition,
+	parentMap: Map<string, Set<string>>
+}
+
+type BoardResult = {ok: true, board: EnhancedBoard} | {ok: false, status: any, error: Error}
+
+export async function loadBoard(moduleName: string, fetch: (info: RequestInfo, init?: RequestInit) => Promise<Response>): Promise<BoardResult> {
 	if (boardDescriptions.has(moduleName)) {
 		const cache = boardDescriptions.get(moduleName)
 		return {

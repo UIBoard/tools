@@ -2,11 +2,11 @@ import type {UIBoard} from '../BoardDescription'
 import { createPreviewProviderDictionary, createViewCompositionMap, PreviewComposition } from '../previewMaps'
 import { getRoots } from './roots'
 
-export function createOverview({roots, visibleChildMap, genericDecomposition}: {roots: Set<string>, visibleChildMap: Map<string, Set<string>>, genericDecomposition: UIBoard.GenericComposition}) {
+export function createOverview({roots, visibleChildMap, genericDecomposition, moduleName}: {roots: Set<string>, visibleChildMap: Map<string, Set<string>>, genericDecomposition: UIBoard.GenericComposition, moduleName: string}) {
 	return Array.from(roots, expandToNode)
 
 	function expandToNode(view: string): Node {
-		return {
+		const tree = reduceTree({
 			name: view,
 			children: getLinksFrom({
 				view,
@@ -16,7 +16,21 @@ export function createOverview({roots, visibleChildMap, genericDecomposition}: {
 				genericDecomposition
 			}),
 			isVisibleInParent: false
-		}
+		})
+		const modulePrefix = moduleName + '.'
+		const graphicalTree = convertNode(tree, [])
+		graphicalTree.href = [moduleName, tree.name].join('/')
+		return graphicalTree
+
+		function convertNode(node: Node, path: string[]): NavigatableNode {
+			return {
+				title: node.name.replace(modulePrefix, ''),
+				fullName: node.name,
+				href: path.concat(node.name).join('/'),
+				children: node.children.map(child => convertNode(child, path.concat(node.name))),
+				isVisibleInParent: node.isVisibleInParent
+			}
+		}	
 	}
 }
 
@@ -27,7 +41,7 @@ export type SubTreeCreationArguments = {
 	genericDecomposition: UIBoard.GenericComposition
 }
 
-export function createSubTreeFrom({root, depthLimit, visibleChildMap, genericDecomposition}: SubTreeCreationArguments) {
+export function createSubTreeFrom({root, depthLimit, visibleChildMap, genericDecomposition}: SubTreeCreationArguments): Node {
 	return reduceTree( {
 		name: root,
 		children: getLinksFrom({
@@ -96,7 +110,7 @@ export function getLinksFrom({view, visibilityList, parents, visibleChildMap, ge
 	return result
 }
 
-interface Node {
+export interface Node {
 	name: string //TODO rename identifier
 	children: Node[]	
 	isVisibleInParent: boolean

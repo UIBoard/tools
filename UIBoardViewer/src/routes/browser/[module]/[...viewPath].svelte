@@ -1,4 +1,4 @@
-<script context="module">
+<script context="module" lang="ts">
 	import {loadBoard} from './_loadBoard'
 
 	export async function load({page, fetch, session, context}) {
@@ -7,13 +7,13 @@
 		const mainViewIdentifier = (viewPath && viewPath.length > 0) ? viewPathComponents[viewPathComponents.length-1] : null
 
 		const boardResult = await loadBoard(page.params.module, fetch)
-		const pageData = {}
+		const pageData: {status?: any, error?: Error, props?: {board: EnhancedBoard, mainViewIdentifier?: string}} = {}
 		if (boardResult.ok) {
 			pageData.props = {
 				board: boardResult.board,
 				mainViewIdentifier
 			}
-		} else {
+		} else if (boardResult.ok == false) {
 			pageData.status = boardResult.status
 			pageData.error = boardResult.error
 		}
@@ -21,31 +21,36 @@
 	}
 </script>
 
-<script>
-	import { createOverview, createSubTreeFrom } from '$lib/model/trees/views';
+<script lang="ts">
+	import type {EnhancedBoard} from './_loadBoard'
+	import { createOverview } from '$lib/model/trees/views'
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
-	import { createGenericParentMap } from '$lib/model/browserContext';
+	import { createGenericParentMap, createLimitedDepthBrowserContext } from '$lib/model/browserContext'
+	import type {LimitedDepthBrowserContext} from '$lib/model/browserContext'
+import { end_hydrating } from 'svelte/internal';
 
-	export let board, mainViewIdentifier
+	export let board: EnhancedBoard, mainViewIdentifier: string
 	
 	let mostDiversePreview, visibleChildMap, overview
 	$: mostDiversePreview = board.mostDiversePreviews.get(mainViewIdentifier)
 	$: visibleChildMap = new Map(Array.from(board.mostDiversePreviews.entries(), ([name, previewComposition])=>[name, previewComposition.viewNames]))
+	$: enhancedBoardDescription = {genericDecomposition: board.moduleDescription.genericDecomposition, visibleChildMap, moduleName: board.moduleDescription.module}
+	$: overview = createOverview({roots: board.roots, ...enhancedBoardDescription})
+	$: parentMap = createGenericParentMap(board.moduleDescription.genericDecomposition)
 
-	// @ts-ignore
-	$: overview = createOverview({roots: board.roots, genericDecomposition: board.moduleDescription.genericDecomposition, visibleChildMap})
-
-	function loadSmallTree(root) {
-		const subtree = createSubTreeFrom({
-			root,
-			depthLimit: 3,
-			visibleChildMap,
-			genericDecomposition: board.moduleDescription.genericDecomposition
-		})
-		return subtree
+	let browserContext: LimitedDepthBrowserContext
+	$: {
+		if (mainViewIdentifier) 
+			browserContext = createLimitedDepthBrowserContext({
+				root: mainViewIdentifier,
+				parentMap,
+				mostDiversePreviews: board.mostDiversePreviews,
+				...enhancedBoardDescription
+			})
+		else
+			browserContext = null
 	}
 
-	const parentMap = createGenericParentMap(board.moduleDescription.genericDecomposition)
 	let myParents
 	$: myParents = Array.from(parentMap.get(mainViewIdentifier) ?? new Set())
 </script>
@@ -53,7 +58,7 @@
 <h1>Browser</h1>
 {#if mainViewIdentifier}
 	<h2>{mainViewIdentifier}</h2>
-	<SimpleTree data={loadSmallTree(mainViewIdentifier)}></SimpleTree>
+	<SimpleTree data={browserContext.subtree}></SimpleTree>
 	<ul>
 		{#each board.moduleDescription.genericDecomposition[mainViewIdentifier] as relatedView}
 			<li><a href="{mainViewIdentifier}/{relatedView}">{relatedView}</a></li>

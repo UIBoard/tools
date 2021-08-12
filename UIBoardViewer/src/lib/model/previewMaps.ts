@@ -74,7 +74,7 @@ export function getAllContainedVisibleViewsFromViewCollector(collector: UIBoard.
 	return result
 }
 
-type PreviewProviderDecomposition = Map<string, PreviewWithProvider[]>
+export type PreviewProviderDecomposition = Map<string, PreviewWithProvider[]>
 
 export type PreviewDecomposition = Map<string, PreviewComposition>
 

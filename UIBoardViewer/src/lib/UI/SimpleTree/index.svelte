@@ -29,6 +29,7 @@
 		root.x = (topBound + bottomBound)/2
 
 		redraw(root)
+		console.log('redraw root', root)
 	}
 
 	let linksGroup, nodesGroup, container, group, back
@@ -79,7 +80,7 @@
 
 			const nodes = nodesGroup
 				.selectAll('g')
-				.data(descendants, node => node.ancestors().reverse().map(node => node.data.name).join("/"))
+				.data(descendants, node => node.data.href)
 
 			const newNodes = nodes
 				.enter()
@@ -104,7 +105,7 @@
 			drawTexts(anchors, newAnchors)
 
 			function updateAnchors(anchors) {
-				anchors.attr('href', node => node!=node.root ? node.root.path(node).map(node=>node.data.name).join('/') : null)
+				anchors.attr('href', node => node.data.href)
 			}
 		}
 
@@ -138,7 +139,7 @@
 			updateText(textGroups.selectAll('text'))
 
 			function updateText(texts) {
-				texts.text(node => node.data.name.slice(6))
+				texts.text(node => node.data.title)
 			}
 		}
 	}
