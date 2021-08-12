@@ -36,7 +36,7 @@
 		const maps = createCompactTreeTraversalMaps(board.moduleDescription)
 		const subtree = createSubTreeFrom({
 			root,
-			depthLimit: 4,
+			depthLimit: 3,
 			visibleChildMap: maps.visibleChildMap,
 			genericChildMap: board.moduleDescription.genericDecomposition
 		})

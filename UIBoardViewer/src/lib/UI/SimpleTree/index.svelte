@@ -13,7 +13,6 @@
 	
 	let root, topBound, bottomBound, height, nodeWidth
 	$: {
-		console.log('recalculating beast')
 		const hierarchicalData = hierarchy(data)
 		nodeWidth = width / (hierarchicalData.height + 1)
 		const layout = flextree({
@@ -26,7 +25,7 @@
 		topBound = root.extents.left
 		bottomBound = root.extents.right
 		height = bottomBound - topBound
-		console.log(topBound, bottomBound, height, root.extents)
+		// console.log(topBound, bottomBound, height, root.extents)
 		root.x = (topBound + bottomBound)/2
 
 		redraw(root)
@@ -93,25 +92,54 @@
 
 			nodes.exit().remove()
 
+			drawAnchors(nodes, newNodes)
+		}
+
+		function drawAnchors(nodes, newNodes) {
+			const anchors = nodes.selectAll('a')
+			const newAnchors = newNodes.append('a')
+			updateAnchors(anchors)
+			updateAnchors(newAnchors)
+			drawCircles(anchors, newAnchors)
+			drawTexts(anchors, newAnchors)
+
+			function updateAnchors(anchors) {
+				anchors.attr('href', node => node!=node.root ? node.root.path(node).map(node=>node.data.name).join('/') : null)
+			}
+		}
+
+		function drawCircles(nodes, newNodes) {
 			const circles = nodes.selectAll('circle')
 			const newCircles = newNodes
 				.append('circle')
 				.attr('r', 5)
-			updateCircle(circles, 'update')
-			updateCircle(newCircles, 'new')
-				
-			const texts = nodes.selectAll('text')
-			const newTexts = newNodes
-				.append('text')
-			updateText(texts)
-			updateText(newTexts)
+			updateCircle(circles)
+			updateCircle(newCircles)
+
+			function updateCircle(circles) {
+				circles.attr('class', node => node.data.isVisibleInParent ? 'visible' : '')
+			}
 		}
 
-		function updateCircle(circles, context) {
-			circles.attr('class', node => node.data.isVisibleInParent ? 'visible' : '')
-		}
-		function updateText(texts) {
-			texts.text(node => node.data.name.slice(6))
+		function drawTexts(nodes, newNodes) {
+			const textGroups = nodes.selectAll('g.text')
+			const newTextGroups = newNodes
+				.append('g')
+				.attr('class','text')
+
+			const newTextBackgrounds = newTextGroups
+				.append('text')
+				.attr('class', 'background')
+			const newTextForegrounds = newTextGroups
+				.append('text')
+			
+			updateText(newTextForegrounds)
+			updateText(newTextBackgrounds)
+			updateText(textGroups.selectAll('text'))
+
+			function updateText(texts) {
+				texts.text(node => node.data.name.slice(6))
+			}
 		}
 	}
 </script>
@@ -142,7 +170,14 @@
 		fill: rgb(255, 62, 62);
 	}
 
-	svg :global(.nodes text) {
+	svg :global(.nodes) {
 		font-size: 10px;
+	}
+
+	svg :global(.nodes text.background) {
+		fill: transparent;
+		stroke: white;
+		stroke-width: 2;
+		stroke-linejoin: round;
 	}
 </style>
