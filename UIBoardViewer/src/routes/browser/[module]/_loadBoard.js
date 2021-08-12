@@ -1,5 +1,6 @@
-import {getRoots} from '$lib/model/roots'
-import {createPreviewProviderDictionary, createViewCompositionMap} from '$lib/model/previews'
+import {getRoots} from '$lib/model/trees/roots'
+import {createPreviewProviderDictionary, createViewCompositionMap} from '$lib/model/previewMaps'
+import { createGenericParentMap } from '$lib/model/browserContext'
 
 const boardDescriptions = new Map()
 
@@ -21,7 +22,8 @@ export async function loadBoard(moduleName, fetch) {
 				moduleDescription,
 				roots,
 				previewProviders,
-				mostDiversePreviews: createViewCompositionMap(previewProviders)
+				mostDiversePreviews: createViewCompositionMap(previewProviders),
+				parentMap: createGenericParentMap(moduleDescription.genericDecomposition)
 			}
 			boardDescriptions.set(moduleName, board)
 			return {

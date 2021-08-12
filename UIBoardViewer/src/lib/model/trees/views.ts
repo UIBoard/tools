@@ -1,34 +1,33 @@
-import type {UIBoard} from './BoardDescription'
-import { createPreviewProviderDictionary, createViewCompositionMap, PreviewComposition } from './previews'
+import type {UIBoard} from '../BoardDescription'
+import { createPreviewProviderDictionary, createViewCompositionMap, PreviewComposition } from '../previewMaps'
 import { getRoots } from './roots'
 
-export function createOverview(description: UIBoard.Description) {
-	const {roots, visibleChildMap} = createCompactTreeTraversalMaps(description)
+export function createOverview({roots, visibleChildMap, genericDecomposition}: {roots: Set<string>, visibleChildMap: Map<string, Set<string>>, genericDecomposition: UIBoard.GenericComposition}) {
 	return Array.from(roots, expandToNode)
 
 	function expandToNode(view: string): Node {
-		return reduceTree({
+		return {
 			name: view,
 			children: getLinksFrom({
 				view,
 				visibilityList: visibleChildMap.get(view) ?? new Set(),
 				parents: new Set(),
 				visibleChildMap,
-				genericChildMap: description.genericDecomposition
+				genericDecomposition
 			}),
 			isVisibleInParent: false
-		})
+		}
 	}
 }
 
-type SubTreeCreationArguments = {
+export type SubTreeCreationArguments = {
 	root: string
 	depthLimit: number
 	visibleChildMap: Map<string, Set<string>>
-	genericChildMap: UIBoard.GenericComposition
+	genericDecomposition: UIBoard.GenericComposition
 }
 
-export function createSubTreeFrom({root, depthLimit, visibleChildMap, genericChildMap}: SubTreeCreationArguments) {
+export function createSubTreeFrom({root, depthLimit, visibleChildMap, genericDecomposition}: SubTreeCreationArguments) {
 	return reduceTree( {
 		name: root,
 		children: getLinksFrom({
@@ -36,7 +35,7 @@ export function createSubTreeFrom({root, depthLimit, visibleChildMap, genericChi
 			visibilityList: visibleChildMap.get(root) ?? new Set(),
 			parents: new Set(),
 			visibleChildMap,
-			genericChildMap: genericChildMap,
+			genericDecomposition,
 			depthLimit,
 			currentDepth: 1
 		}),
@@ -67,15 +66,15 @@ type LinkConstructionArguments = {
 	visibilityList: Set<string>
 	parents: Set<string>
 	visibleChildMap: Map<string, Set<string>>
-	genericChildMap: UIBoard.GenericComposition
+	genericDecomposition: UIBoard.GenericComposition
 	currentDepth?: number
 	depthLimit?: number
 }
 
-export function getLinksFrom({view, visibilityList, parents, visibleChildMap, genericChildMap, currentDepth = 0, depthLimit = Infinity}: LinkConstructionArguments): Node[] {
+export function getLinksFrom({view, visibilityList, parents, visibleChildMap, genericDecomposition, currentDepth = 0, depthLimit = Infinity}: LinkConstructionArguments): Node[] {
 	const result: Node[] = []
 
-	const genericChildren = genericChildMap[view]
+	const genericChildren = genericDecomposition[view]
 	if (currentDepth < depthLimit && genericChildren) {
 		const visitedChildren = new Set<string>()
 		const newParents = new Set(parents)
@@ -83,7 +82,7 @@ export function getLinksFrom({view, visibilityList, parents, visibleChildMap, ge
 		for (const child of genericChildren) {
 			if (newParents.has(child) || visitedChildren.has(child)) continue;
 			visitedChildren.add(child)
-			const linkConstructionArguments = {view: child, parents: newParents, visibleChildMap, genericChildMap, depthLimit, currentDepth: currentDepth+1}
+			const linkConstructionArguments = {view: child, parents: newParents, visibleChildMap, genericDecomposition, depthLimit, currentDepth: currentDepth+1}
 			if (visibilityList.has(child)) {
 				const links = getLinksFrom({visibilityList, ...linkConstructionArguments})
 				result.push({name: child, children: links, isVisibleInParent: true})
@@ -152,7 +151,6 @@ function removeVisibleLeafNodes(tree: Node) {
 	return optimizedTree
 }
 
-console.log('test')
 
 interface Parent<Child> {
 	children: Child[]

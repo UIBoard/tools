@@ -5,15 +5,13 @@
 		const viewPath = page.params.viewPath
 		const viewPathComponents = viewPath.split('/')
 		const mainViewIdentifier = (viewPath && viewPath.length > 0) ? viewPathComponents[viewPathComponents.length-1] : null
-		console.log("page params", page.params)
 
 		const boardResult = await loadBoard(page.params.module, fetch)
 		const pageData = {}
 		if (boardResult.ok) {
 			pageData.props = {
 				board: boardResult.board,
-				mainViewIdentifier,
-				mostDiversePreview: boardResult.board.mostDiversePreviews.get(mainViewIdentifier)
+				mainViewIdentifier
 			}
 		} else {
 			pageData.status = boardResult.status
@@ -24,26 +22,32 @@
 </script>
 
 <script>
-	import { createCompactTreeTraversalMaps, createOverview, createSubTreeFrom } from '$lib/model/tree';
+	import { createOverview, createSubTreeFrom } from '$lib/model/trees/views';
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
+	import { createGenericParentMap } from '$lib/model/browserContext';
 
-	export let board, mainViewIdentifier, mostDiversePreview
+	export let board, mainViewIdentifier
+	
+	let mostDiversePreview, visibleChildMap, overview
+	$: mostDiversePreview = board.mostDiversePreviews.get(mainViewIdentifier)
+	$: visibleChildMap = new Map(Array.from(board.mostDiversePreviews.entries(), ([name, previewComposition])=>[name, previewComposition.viewNames]))
+
 	// @ts-ignore
-	const overview = createOverview(board.moduleDescription)
+	$: overview = createOverview({roots: board.roots, genericDecomposition: board.moduleDescription.genericDecomposition, visibleChildMap})
 
 	function loadSmallTree(root) {
-		console.log(root)
-		const maps = createCompactTreeTraversalMaps(board.moduleDescription)
 		const subtree = createSubTreeFrom({
 			root,
 			depthLimit: 3,
-			visibleChildMap: maps.visibleChildMap,
-			genericChildMap: board.moduleDescription.genericDecomposition
+			visibleChildMap,
+			genericDecomposition: board.moduleDescription.genericDecomposition
 		})
-		console.log(subtree)
 		return subtree
 	}
-	// console.log('overview', overview)
+
+	const parentMap = createGenericParentMap(board.moduleDescription.genericDecomposition)
+	let myParents
+	$: myParents = Array.from(parentMap.get(mainViewIdentifier) ?? new Set())
 </script>
 
 <h1>Browser</h1>
@@ -55,6 +59,7 @@
 			<li><a href="{mainViewIdentifier}/{relatedView}">{relatedView}</a></li>
 		{/each}
 	</ul>
+	<p>Parents: {myParents.map(name => name.slice(name.indexOf('.') + 1)).join(', ')}</p>
 	{#if mostDiversePreview}
 		<p>Most diverse preview: {mostDiversePreview.context.provider}</p>
 		<img src="/BoardDescriptions/{board.moduleDescription.module}/{mostDiversePreview.context.preview.render}" alt="{mostDiversePreview.context.provider}">

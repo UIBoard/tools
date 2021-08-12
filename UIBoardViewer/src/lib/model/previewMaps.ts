@@ -1,5 +1,8 @@
 import type {UIBoard} from './BoardDescription'
 
+/** 
+ * Creates a dictionary that maps a (view's identifier) to (all preview providers that provide a preview for that view).
+ */
 export function createPreviewProviderDictionary(visualDecomposition: UIBoard.PreviewProvider[]): PreviewProviderDecomposition {
 	const previewsPerView = new Map<string,PreviewWithProvider[]>()
 
@@ -32,6 +35,13 @@ export function createPreviewProviderDictionary(visualDecomposition: UIBoard.Pre
 	return previewsPerView
 }
 
+/**
+ * Make a dictionary with the most diversive previews.
+ * Diversity of a preview is measured using the number of distinct identifiers of views that are visible in the preview.
+ * 
+ * @param providerDictionary 
+ * @returns A dictionary that maps a (view's identifier) to (the preview provider that provides the most diversive preview for that view).
+ */
 export function createViewCompositionMap(providerDictionary: PreviewProviderDecomposition): PreviewDecomposition {
 	const result: PreviewDecomposition = new Map()
 	for (const [viewName, providers] of providerDictionary.entries()) {

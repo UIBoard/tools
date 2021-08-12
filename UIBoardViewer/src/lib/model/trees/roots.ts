@@ -1,4 +1,4 @@
-import {UIBoard} from './BoardDescription'
+import type {UIBoard} from '../BoardDescription'
 
 export function getRoots(composition: UIBoard.GenericComposition): Set<string> {
 	const dictionary = new Map(Object.entries(composition))
