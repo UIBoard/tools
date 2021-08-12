@@ -1,27 +1,30 @@
 <script>
 	import { onMount } from 'svelte'
 	import { flextree } from 'd3-flextree'
+	import { hierarchy } from 'd3-hierarchy'
+	import { linkHorizontal } from 'd3-shape'
+	import { select } from 'd3-selection'
 
 	let svgElement;
 	export let data
 
 	const width = 600
 	const nodeHeight = 15
-	const nodeWidth = width/4
 	
-	let root, topBound, bottomBound, height
+	let root, topBound, bottomBound, height, nodeWidth
 	$: {
 		console.log('recalculating beast')
-		const layout = flextree({ nodeSize() { return [nodeHeight, nodeWidth] } })
-		const hier = layout.hierarchy(data)
-		root = layout(hier)
+		const hierarchicalData = hierarchy(data)
+		nodeWidth = width / (hierarchicalData.height + 1)
+		const layout = flextree({
+			nodeSize() { return [nodeHeight, nodeWidth] },
+			spacing(left, right) { return left.parent == right.parent ? 0 : 10 }
+		})
+		const flexHData = layout.hierarchy(data)
+		root = layout(flexHData)
 
-		topBound = Infinity
-		bottomBound = -Infinity
-		root.each(node => {
-			if (node.x < topBound) topBound = node.x
-			if (node.x > bottomBound) bottomBound = node.x
-		})	
+		topBound = root.extents.left
+		bottomBound = root.extents.right
 		height = bottomBound - topBound
 		console.log(topBound, bottomBound, height, root.extents)
 		root.x = (topBound + bottomBound)/2
@@ -29,18 +32,18 @@
 		redraw(root)
 	}
 
-	let d3, linksGroup, nodesGroup, createHorizontalSpline, container, group
+	let linksGroup, nodesGroup, container, group, back
+	const createHorizontalSpline = linkHorizontal()
+			.x(n => n.y)
+			.y(n => n.x)
 	
 	onMount(drawTree);
 
 	async function drawTree() {
-		d3 = await import('d3')
+		container = select(svgElement)
 
-		createHorizontalSpline = d3.linkHorizontal()
-			.x(n => n.y)
-			.y(n => n.x)
-
-		container = d3.select(svgElement)
+		// back = container
+		// 	.append('rect')
 
 		group = container
 			.append('g')
@@ -58,10 +61,14 @@
 	}
 
 	function redraw(source) {
-		if (d3) {
+		if (container) {
+			// back
+			// 	.attr('width', 600)
+			// 	.attr('height', height)
+			// 	.attr('y', topBound)
+			// 	.attr('class', 'background')
+
 			const descendants = source.descendants()
-			console.log('redraw', source.data.name, root)
-			// console.log(descendants)
 			container
 				.attr('viewBox', [0,topBound, width, height])
 
@@ -73,7 +80,7 @@
 
 			const nodes = nodesGroup
 				.selectAll('g')
-				.data(descendants, node => node.data.name)
+				.data(descendants, node => node.ancestors().reverse().map(node => node.data.name).join("/"))
 
 			const newNodes = nodes
 				.enter()
@@ -101,10 +108,7 @@
 		}
 
 		function updateCircle(circles, context) {
-			circles.attr('class', node => {
-				console.log(context, node.data.name, node.data.isVisibleInParent, node.root.data.name)
-				return node.data.isVisibleInParent ? 'visible' : ''
-			})
+			circles.attr('class', node => node.data.isVisibleInParent ? 'visible' : '')
 		}
 		function updateText(texts) {
 			texts.text(node => node.data.name.slice(6))
