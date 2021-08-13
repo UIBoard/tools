@@ -29,7 +29,6 @@
 		root.x = (topBound + bottomBound)/2
 
 		redraw(root)
-		console.log('redraw root', root)
 	}
 
 	let linksGroup, nodesGroup, container, group, back
@@ -149,8 +148,9 @@
 
 <style>
 	svg {
-		width: 92vw;
-		height: 23vw;
+		position: absolute;
+		width: 100%;
+		height: 100%;
 	}
 
 	svg :global(.background) {

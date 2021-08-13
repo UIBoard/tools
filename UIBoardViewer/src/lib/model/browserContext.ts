@@ -1,8 +1,7 @@
 import {createSubTreeFrom} from './trees/views'
 import type {Node} from './trees/views'
 import type {UIBoard} from './BoardDescription'
-import { getAllContainedVisibleViewsFromPreview } from './previewMaps'
-import type {PreviewDecomposition, PreviewComposition} from './previewMaps'
+import type {PreviewDecomposition} from './previewMaps'
 
 type LimitedDepthBrowserCreationArguments = {
 	root: string
@@ -10,45 +9,86 @@ type LimitedDepthBrowserCreationArguments = {
 	genericDecomposition: UIBoard.GenericComposition
 	parentMap: Map<string, Set<string>>
 	mostDiversePreviews: PreviewDecomposition
-	moduleName: string
+	moduleName: string,
+	path: string[]
 }
 
 export type LimitedDepthBrowserContext = {
 	subtree: CompactImageTree;
-	previewProvider: PreviewComposition;
-	preview: UIBoard.Preview;
-	visibleViews: Set<string>;
-	parentMap: Map<string, Set<string>>;
+	mainPreview: UIBoard.Preview;
+	visibleViewReferences: BrowserReference[]
+	incomingReferences: BrowserReference[]
+	breadcrumbPath: BrowserReference[]
 }
 
-export function createLimitedDepthBrowserContext({root, moduleName, visibleChildMap, genericDecomposition, parentMap, mostDiversePreviews}: LimitedDepthBrowserCreationArguments): LimitedDepthBrowserContext {
-	const subtree = createSubTreeFrom({depthLimit: 3, root, visibleChildMap, genericDecomposition})
-	const previewProvider = mostDiversePreviews.get(root)
-	const preview = previewProvider.context.preview
-	const visibleViews = getAllContainedVisibleViewsFromPreview(preview)	
+type BrowserReference = {
+	title: string
+	href: string
+	image?: string
+}
+
+export function createLimitedDepthBrowserContext({root, moduleName, path, visibleChildMap, genericDecomposition, parentMap, mostDiversePreviews}: LimitedDepthBrowserCreationArguments): LimitedDepthBrowserContext {
 	const modulePrefix = moduleName + '.'
 
-	const firstChildren = subtree.children.map( node => ({
+	const subtree = createSubTreeFrom({depthLimit: 3, root, visibleChildMap, genericDecomposition})
+	const previewProvider = mostDiversePreviews.get(root)
+	const visibleViews = Array.from(previewProvider.viewNames)
+		.filter(name => name != root) // TODO: Remove this because root should not be in this list
+		.map(createOutgoingReference)
+	const treeWithImages = createCompactImageTree(subtree, mostDiversePreviews, modulePrefix)
+	const incomingReferences = Array.from(parentMap.get(root) ?? [], createIncomingReference)
+
+	return {
+		subtree: treeWithImages,
+		mainPreview: previewProvider.context.preview,
+		visibleViewReferences: visibleViews,
+		breadcrumbPath: path.map((nodeName, index, path) => createBreadcrumbReference(nodeName, path.slice(0,index+1))),
+		incomingReferences
+	}
+
+	function createIncomingReference(nodeName: string): BrowserReference {
+		return {
+			title: nodeName.replace(modulePrefix, ''),
+			href: `browser/${moduleName}/${nodeName}`, // Todo add better path
+			image: mostDiversePreviews.get(nodeName).context.preview.render
+		}
+	}
+	function createOutgoingReference(nodeName: string): BrowserReference {
+		return {
+			title: nodeName.replace(modulePrefix, ''),
+			href: `${root}/${nodeName}`, // Todo add better path
+			image: mostDiversePreviews.get(nodeName).context.preview.render
+		}
+	}
+	function createBreadcrumbReference(nodeName: string, path: string[]): BrowserReference {
+		return {
+			title: nodeName.replace(modulePrefix, ''),
+			href: ['','browser', moduleName].concat(path).join('/'), // Todo add better path
+			image: mostDiversePreviews.get(nodeName).context.preview.render
+		}
+	}
+}
+
+function createCompactImageTree(rootNode: Node, mostDiversePreviews: PreviewDecomposition, modulePrefix: string): CompactImageTree {
+	const firstChildren = rootNode.children.map( node => ({
 		title: node.name.replace(modulePrefix, ''),
 		fullName: node.name,
-		href: subtree.name + '/' + node.name,
-		children: node.children.map(child => convertNode(child, [subtree.name, node.name])),
+		href: rootNode.name + '/' + node.name,
+		children: node.children.map(child => convertNode(child, [rootNode.name, node.name])),
 		isVisibleInParent: node.isVisibleInParent,
 		previewContext: {
-			preview: mostDiversePreviews.get(root).context.preview,
-			scale: 1/subtree.children.length
+			preview: mostDiversePreviews.get(rootNode.name).context.preview,
+			scale: 1/rootNode.children.length
 		}
 	}))
 
-	const enhancedSubtree: CompactImageTree = {
+	return {
 		title: '',
-		fullName: subtree.name,
+		fullName: rootNode.name,
 		children: firstChildren,
-		href: root,
+		href: rootNode.name,
 		isVisibleInParent: false
 	}
-
-	return {subtree: enhancedSubtree, previewProvider, preview, visibleViews, parentMap}
 
 	function convertNode(node: Node, path: string[]): NavigatableNode {
 		return {
@@ -61,7 +101,7 @@ export function createLimitedDepthBrowserContext({root, moduleName, visibleChild
 	}
 }
 
-type CompactImageTree = NavigatableNode & {
+export type CompactImageTree = NavigatableNode & {
 	children: PreviewableNode[],
 }
 

@@ -1,17 +1,20 @@
 <script context="module" lang="ts">
 	import {loadBoard} from './_loadBoard'
+	import type { LoadInput } from '@sveltejs/kit'
+	import Board from '$lib/UI/Board/index.svelte'
 
-	export async function load({page, fetch, session, context}) {
+	export async function load({page, fetch, session, context}: LoadInput) {
 		const viewPath = page.params.viewPath
 		const viewPathComponents = viewPath.split('/')
 		const mainViewIdentifier = (viewPath && viewPath.length > 0) ? viewPathComponents[viewPathComponents.length-1] : null
 
 		const boardResult = await loadBoard(page.params.module, fetch)
-		const pageData: {status?: any, error?: Error, props?: {board: EnhancedBoard, mainViewIdentifier?: string}} = {}
+		const pageData: {status?: any, error?: Error, props?: {board: EnhancedBoard, mainViewIdentifier?: string, breadcrumbPath: string[]}} = {}
 		if (boardResult.ok) {
 			pageData.props = {
 				board: boardResult.board,
-				mainViewIdentifier
+				mainViewIdentifier,
+				breadcrumbPath: viewPathComponents
 			}
 		} else if (boardResult.ok == false) {
 			pageData.status = boardResult.status
@@ -27,12 +30,11 @@
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
 	import { createGenericParentMap, createLimitedDepthBrowserContext } from '$lib/model/browserContext'
 	import type {LimitedDepthBrowserContext} from '$lib/model/browserContext'
-import { end_hydrating } from 'svelte/internal';
+	import type { PreviewComposition } from '$lib/model/previewMaps';
 
-	export let board: EnhancedBoard, mainViewIdentifier: string
+	export let board: EnhancedBoard, mainViewIdentifier: string, breadcrumbPath: string[]
 	
-	let mostDiversePreview, visibleChildMap, overview
-	$: mostDiversePreview = board.mostDiversePreviews.get(mainViewIdentifier)
+	let visibleChildMap, overview
 	$: visibleChildMap = new Map(Array.from(board.mostDiversePreviews.entries(), ([name, previewComposition])=>[name, previewComposition.viewNames]))
 	$: enhancedBoardDescription = {genericDecomposition: board.moduleDescription.genericDecomposition, visibleChildMap, moduleName: board.moduleDescription.module}
 	$: overview = createOverview({roots: board.roots, ...enhancedBoardDescription})
@@ -45,30 +47,16 @@ import { end_hydrating } from 'svelte/internal';
 				root: mainViewIdentifier,
 				parentMap,
 				mostDiversePreviews: board.mostDiversePreviews,
+				path: breadcrumbPath,
 				...enhancedBoardDescription
 			})
 		else
 			browserContext = null
 	}
-
-	let myParents
-	$: myParents = Array.from(parentMap.get(mainViewIdentifier) ?? new Set())
 </script>
 
-<h1>Browser</h1>
 {#if mainViewIdentifier}
-	<h2>{mainViewIdentifier}</h2>
-	<SimpleTree data={browserContext.subtree}></SimpleTree>
-	<ul>
-		{#each board.moduleDescription.genericDecomposition[mainViewIdentifier] as relatedView}
-			<li><a href="{mainViewIdentifier}/{relatedView}">{relatedView}</a></li>
-		{/each}
-	</ul>
-	<p>Parents: {myParents.map(name => name.slice(name.indexOf('.') + 1)).join(', ')}</p>
-	{#if mostDiversePreview}
-		<p>Most diverse preview: {mostDiversePreview.context.provider}</p>
-		<img src="/BoardDescriptions/{board.moduleDescription.module}/{mostDiversePreview.context.preview.render}" alt="{mostDiversePreview.context.provider}">
-	{/if}
+	<Board context={browserContext}></Board>
 {:else}
 	<h2>Module {board.moduleDescription.module}</h2>
 	<p>This module has the following root views</p>
@@ -82,10 +70,3 @@ import { end_hydrating } from 'svelte/internal';
 	<SimpleTree data={overview[0]}></SimpleTree>
 	{/if}
 {/if}
-
-<style>
-	img {
-		max-height: 70vh;
-		max-width: 80vw;
-	}
-</style>
