@@ -14,6 +14,7 @@ type LimitedDepthBrowserCreationArguments = {
 }
 
 export type LimitedDepthBrowserContext = {
+	moduleName: string
 	subtree: CompactImageTree;
 	mainPreview: UIBoard.Preview;
 	visibleViewReferences: BrowserReference[]
@@ -43,14 +44,15 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 		mainPreview: previewProvider.context.preview,
 		visibleViewReferences: visibleViews,
 		breadcrumbPath: path.map((nodeName, index, path) => createBreadcrumbReference(nodeName, path.slice(0,index+1))),
-		incomingReferences
+		incomingReferences,
+		moduleName
 	}
 
 	function createIncomingReference(nodeName: string): BrowserReference {
 		return {
 			title: nodeName.replace(modulePrefix, ''),
-			href: `browser/${moduleName}/${nodeName}`, // Todo add better path
-			image: mostDiversePreviews.get(nodeName).context.preview.render
+			href: `/browser/${moduleName}/${nodeName}`, // Todo add better path
+			image: moduleName + '/' + mostDiversePreviews.get(nodeName).context.preview.render
 		}
 	}
 	function createOutgoingReference(nodeName: string): BrowserReference {
@@ -64,7 +66,7 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: ['','browser', moduleName].concat(path).join('/'), // Todo add better path
-			image: mostDiversePreviews.get(nodeName).context.preview.render
+			image: moduleName + '/' + mostDiversePreviews.get(nodeName).context.preview.render
 		}
 	}
 }

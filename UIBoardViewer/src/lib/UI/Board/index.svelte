@@ -1,12 +1,18 @@
 <script lang=ts>
+	import type { UIBoard } from '$lib/model/BoardDescription';
+
 	import type { LimitedDepthBrowserContext } from '$lib/model/browserContext';
 
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
 	
 	export let context: LimitedDepthBrowserContext
 
-	let mainComponentAspect = 1
-	$: mainComponentAspect = context.mainPreview.info.viewport[1][0] / context.mainPreview.info.viewport[1][1]
+	let mainComponentAspect = 1, viewBox: string, mainPreviewInfo: UIBoard.PreviewInfo
+	$: {
+		mainPreviewInfo = context.mainPreview.info
+		mainComponentAspect = mainPreviewInfo.viewport[1][0] / mainPreviewInfo.viewport[1][1]
+		viewBox = mainPreviewInfo.viewport.flatMap(i => i).join(' ')
+	}
 </script>
 
 <section class="UIBoard-container">
@@ -25,13 +31,21 @@
 	<section class="ViewTree-container">
 		<div class="ParentViews-container">
 			{#each context.incomingReferences as parent}
-				<div>{parent}</div>
+				<a href={parent.href}>
+					<img src="/BoardDescriptions/{parent.image}" alt="{parent.title}">
+					<span>{parent.title}</span>
+				</a>
 			{/each}
 		</div>
 		<div class="MainComponent-container">
-			<svg viewBox="0 0 300 500" style="width: {20}vw; height: {20 / mainComponentAspect}vw">
-				<rect x="0" y="0" width="100%" height="100%" fill="gray"></rect>
-				<circle r=145 cx=150 cy=200></circle>
+			<svg viewBox={viewBox} style="width: {20}vw; height: {20 / mainComponentAspect}vw">
+				<image
+				  href={`/BoardDescriptions/${context.moduleName}/${context.mainPreview.render}`}
+					width={ mainPreviewInfo.viewport[1][0]}
+					height={mainPreviewInfo.viewport[1][1]}
+					x={mainPreviewInfo.viewport[0][0]}
+					y={mainPreviewInfo.viewport[0][1]}>
+				</image>
 			</svg>
 			<div class="show-code">Show code</div>
 		</div>
@@ -127,6 +141,11 @@
 		position: relative;
 	}
 
+	.ParentViews-container > a > img, .VisibleSubcomponents-scrolling-container > a > img {
+		border: 1px solid;
+		border-radius: 5px;
+	}
+
 	.VisibleSubcomponents-scrolling-container {
 		display: flex;
 		padding-top: 0.5em;
@@ -144,6 +163,7 @@
 	.VisibleSubcomponents-scrolling-container > a > img {
 		max-height: 100px;
 		max-width: 150px;
+		border-color: green;
 	}
 	.VisibleSubcomponents-scrolling-container > a > span {
 		margin-top: 0.5em;
@@ -155,16 +175,29 @@
 	.ParentViews-container {
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
 		overflow-y: scroll;
 	}
-	.ParentViews-container > div {
-		width: 100px;
-		height: 100px;
+	.ParentViews-container > a {
 		flex-shrink: 0;
-		background-color: green;
 		margin-top: 1em;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		align-items: center;
+		font-size: 10px;
 	}
-	.ParentViews-container > div:first-child {
+
+	.ParentViews-container > a > img {
+		max-height: 100px;
+		max-width: 70px;
+	}
+	.ParentViews-container > a > span {
+		margin-top: 0.5em;
+	}
+
+	.ParentViews-container > a:first-child {
 		margin-top: 0;
 	}
 
