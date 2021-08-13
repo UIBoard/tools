@@ -1,15 +1,12 @@
 <script lang=ts>
-	import type {UIBoard} from '../../model/BoardDescription'
 	import type { LimitedDepthBrowserContext } from '$lib/model/browserContext';
-	import { getAllContainedVisibleViewsFromPreview } from '$lib/model/previewMaps';
-	import type { PreviewComposition } from '$lib/model/previewMaps';
 
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
 	
 	export let context: LimitedDepthBrowserContext
 
 	let mainComponentAspect = 1
-	$: mainComponentAspect = context.mainPreview.info.viewport[1][0] / context.mainPreview.info.viewport[1][0]
+	$: mainComponentAspect = context.mainPreview.info.viewport[1][0] / context.mainPreview.info.viewport[1][1]
 </script>
 
 <section class="UIBoard-container">
@@ -46,9 +43,10 @@
 		<div>Visible subcomponents</div>
 		<div class="VisibleSubcomponents-scrolling-container">
 			{#each context.visibleViewReferences as child}
-				<div>
-					<a href={child.href}>{child.title}</a>
-				</div>
+				<a href={child.href}>
+					<img src="/BoardDescriptions/{child.image}" alt="{child.title}">
+					<span>{child.title}</span>
+				</a>
 			{/each}
 		</div>
 	</footer>
@@ -68,6 +66,7 @@
 		padding: 1em;
 		box-sizing: border-box;
 		flex-direction: column;
+		font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	}
 
 	nav {
@@ -133,13 +132,23 @@
 		padding-top: 0.5em;
 		overflow-x: scroll;
 	}
-	.VisibleSubcomponents-scrolling-container > div {
-		height: 100px;
+	.VisibleSubcomponents-scrolling-container > a {
 		flex-shrink: 0;
-		background-color: green;
 		margin-left: 1em;
+
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		align-items: center;
 	}
-	.VisibleSubcomponents-scrolling-container > div:first-child {
+	.VisibleSubcomponents-scrolling-container > a > img {
+		max-height: 100px;
+		max-width: 150px;
+	}
+	.VisibleSubcomponents-scrolling-container > a > span {
+		margin-top: 0.5em;
+	}
+	.VisibleSubcomponents-scrolling-container > a:first-child {
 		margin-left: 0;
 	}
 

@@ -30,7 +30,6 @@
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
 	import { createGenericParentMap, createLimitedDepthBrowserContext } from '$lib/model/browserContext'
 	import type {LimitedDepthBrowserContext} from '$lib/model/browserContext'
-	import type { PreviewComposition } from '$lib/model/previewMaps';
 
 	export let board: EnhancedBoard, mainViewIdentifier: string, breadcrumbPath: string[]
 	

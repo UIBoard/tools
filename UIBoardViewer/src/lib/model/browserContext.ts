@@ -57,7 +57,7 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: `${root}/${nodeName}`, // Todo add better path
-			image: mostDiversePreviews.get(nodeName).context.preview.render
+			image: moduleName + '/' + mostDiversePreviews.get(nodeName).context.preview.render
 		}
 	}
 	function createBreadcrumbReference(nodeName: string, path: string[]): BrowserReference {
