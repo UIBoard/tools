@@ -126,6 +126,7 @@
 			const newTextGroups = newNodes
 				.append('g')
 				.attr('class','text')
+				.attr('transform', 'translate(10,3)')
 
 			const newTextBackgrounds = newTextGroups
 				.append('text')
