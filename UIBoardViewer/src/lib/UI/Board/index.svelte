@@ -1,5 +1,6 @@
 <script lang=ts>
 	import type { UIBoard } from '$lib/model/BoardDescription';
+	import {browser} from '$app/env'
 
 	import type { LimitedDepthBrowserContext } from '$lib/model/browserContext';
 
@@ -23,7 +24,8 @@
 		if (context && context.mainPreview) regions = regionsIn(context.mainPreview)
 	}
 
-	const highlightStyleContainer = document.createElement('style')
+	const doc = (browser ? document : {createElement(){}})
+	const highlightStyleContainer = doc.createElement('style')
 	onMount(addHighlightStyleContainer)
 
 	function regionsIn(preview: UIBoard.Preview) {
