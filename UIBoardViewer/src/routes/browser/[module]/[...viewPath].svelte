@@ -41,7 +41,7 @@
 
 	let browserContext: LimitedDepthBrowserContext
 	$: {
-		if (mainViewIdentifier) 
+		if (mainViewIdentifier && board.moduleDescription.genericDecomposition[mainViewIdentifier])
 			browserContext = createLimitedDepthBrowserContext({
 				root: mainViewIdentifier,
 				parentMap,
