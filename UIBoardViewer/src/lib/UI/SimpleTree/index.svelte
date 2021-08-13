@@ -168,7 +168,7 @@
 	}
 
 	svg :global(.nodes circle.visible) {
-		fill: rgb(255, 62, 62);
+		fill: green;
 	}
 
 	svg :global(.nodes) {

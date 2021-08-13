@@ -11,7 +11,23 @@
 	$: {
 		mainPreviewInfo = context.mainPreview.info
 		mainComponentAspect = mainPreviewInfo.viewport[1][0] / mainPreviewInfo.viewport[1][1]
-		viewBox = mainPreviewInfo.viewport.flatMap(i => i).join(' ')
+		viewBox = mainPreviewInfo.viewport[0]
+			.map(coordinate => coordinate - 1)
+			.concat(mainPreviewInfo.viewport[1].map(size => size + 2) )
+			.join(' ')
+	}
+
+	function regionsIn(preview: UIBoard.Preview) {
+		var regions = []
+		collect(preview.info.tags)
+		return regions
+
+		function collect(tag: UIBoard.ViewCollector) {
+			for (const child of tag.children) {
+				regions.push(child.visibleArea)
+				collect(child.collector)
+			}
+		}
 	}
 </script>
 
@@ -46,6 +62,14 @@
 					x={mainPreviewInfo.viewport[0][0]}
 					y={mainPreviewInfo.viewport[0][1]}>
 				</image>
+				{#each regionsIn(context.mainPreview) as region}
+					<rect
+						class=region
+						x={region[0][0]} y={region[0][1]} width={region[1][0]} height={region[1][1]}
+						fill=none
+						rx=10>
+					</rect>
+				{/each}
 			</svg>
 			<div class="show-code">Show code</div>
 		</div>
@@ -130,6 +154,20 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+	}
+
+	.MainComponent-container:hover rect.region {
+		fill: rgba(0, 255, 0, 0.001);
+		stroke: green;
+		stroke-width: 1;
+	}
+
+	.MainComponent-container rect.region:hover {
+		stroke-width: 2;
+	}
+
+	.MainComponent-container svg {
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.459);
 	}
 
 	.MainComponent-container .show-code {
