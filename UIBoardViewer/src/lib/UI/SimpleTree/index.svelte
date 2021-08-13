@@ -179,7 +179,7 @@
 	svg :global(.nodes text.background) {
 		fill: transparent;
 		stroke: white;
-		stroke-width: 2;
+		stroke-width: 3;
 		stroke-linejoin: round;
 	}
 </style>
