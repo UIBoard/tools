@@ -24,7 +24,7 @@
 		if (context && context.mainPreview) regions = regionsIn(context.mainPreview)
 	}
 
-	const doc = (browser ? document : {createElement(){}})
+	const doc = (browser ? document : {createElement(): HTMLElement {return {} as HTMLElement}})
 	const highlightStyleContainer = doc.createElement('style')
 	onMount(addHighlightStyleContainer)
 
@@ -46,6 +46,23 @@
 			svg rect.view-type-${view.replace('.', '\\.')} {
 				stroke-width: 4;
 				stroke: green;
+			}
+		`
+	}
+
+	function removeHighlight() {
+		highlightStyleContainer.innerHTML = ''
+	}
+
+	function highlightViewsOfType(view: string) {
+		const className = '.view-type-' + view.replace('.', '\\.')
+		highlightStyleContainer.innerHTML = `
+			footer a${className} img {
+				box-shadow: 0 0 10px green;
+			}
+
+			footer a${className} {
+				color: green;
 			}
 		`
 	}
@@ -83,7 +100,7 @@
 			{/each}
 		</div>
 		<div class="MainComponent-container">
-			<svg viewBox={viewBox} style="width: {20}vw; height: {20 / mainComponentAspect}vw" on:mouseleave={event => undefined}>
+			<svg viewBox={viewBox} style="width: {20}vw; height: {20 / mainComponentAspect}vw" on:mouseleave={event => removeHighlight()}>
 				<image
 				  href={`/BoardDescriptions/${context.moduleName}/${context.mainPreview.render}`}
 					width={ mainPreviewInfo.viewport[1][0]}
@@ -97,7 +114,7 @@
 						x={region.visibleArea[0][0]} y={region.visibleArea[0][1]} width={region.visibleArea[1][0]} height={region.visibleArea[1][1]}
 						fill=none
 						rx=10
-						on:mouseenter={event => undefined}>
+						on:mouseenter={event => highlightViewsOfType(region.type)}>
 					</rect>
 				{/each}
 			</svg>
@@ -109,9 +126,9 @@
 	</section>
 	<footer>
 		<div>{context.visibleViewReferences.length == 0 ? "No visible subcomponents" : "Visible subcomponents"}</div>
-		<div class="VisibleSubcomponents-scrolling-container" on:mouseleave={event => undefined}>
+		<div class="VisibleSubcomponents-scrolling-container" on:mouseleave={event => removeHighlight()}>
 			{#each context.visibleViewReferences as child}
-				<a href={child.href} on:mouseenter={event => highlightRegionsOfType(child.view)}>
+				<a href={child.href} class="view-type-{child.view}" on:mouseenter={event => highlightRegionsOfType(child.view)}>
 					<img src={child.image ?? '/NoPreview.png'} alt="{child.title}">
 					<span>{child.title}</span>
 				</a>
