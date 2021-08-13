@@ -4,10 +4,11 @@
 	import type { LimitedDepthBrowserContext } from '$lib/model/browserContext';
 
 	import SimpleTree from '$lib/UI/SimpleTree/index.svelte'
+	import { onMount } from 'svelte';
 	
 	export let context: LimitedDepthBrowserContext
 
-	let mainComponentAspect = 1, viewBox: string, mainPreviewInfo: UIBoard.PreviewInfo
+	let mainComponentAspect = 0.2, viewBox: string, mainPreviewInfo: UIBoard.PreviewInfo
 	$: {
 		mainPreviewInfo = context.mainPreview.info
 		mainComponentAspect = mainPreviewInfo.viewport[1][0] / mainPreviewInfo.viewport[1][1]
@@ -17,16 +18,42 @@
 			.join(' ')
 	}
 
+	let regions: UIBoard.CollectedView[]
+	$: {
+		if (context && context.mainPreview) regions = regionsIn(context.mainPreview)
+	}
+
+	const highlightStyleContainer = document.createElement('style')
+	onMount(addHighlightStyleContainer)
+
 	function regionsIn(preview: UIBoard.Preview) {
-		var regions = []
+		var regions: UIBoard.CollectedView[] = []
 		collect(preview.info.tags)
 		return regions
 
 		function collect(tag: UIBoard.ViewCollector) {
 			for (const child of tag.children) {
-				regions.push(child.visibleArea)
+				regions.push(child)
 				collect(child.collector)
 			}
+		}
+	}
+
+	function highlightRegionsOfType(view: string) {
+		highlightStyleContainer.innerHTML = `
+			svg rect.view-type-${view.replace('.', '\\.')} {
+				stroke-width: 4;
+				stroke: green;
+			}
+		`
+	}
+
+	function addHighlightStyleContainer() {
+		document.head.appendChild(highlightStyleContainer)
+
+		return removeStyle // called when unmounted
+		function removeStyle() {
+			document.head.removeChild(highlightStyleContainer)
 		}
 	}
 </script>
@@ -54,7 +81,7 @@
 			{/each}
 		</div>
 		<div class="MainComponent-container">
-			<svg viewBox={viewBox} style="width: {20}vw; height: {20 / mainComponentAspect}vw">
+			<svg viewBox={viewBox} style="width: {20}vw; height: {20 / mainComponentAspect}vw" on:mouseleave={event => undefined}>
 				<image
 				  href={`/BoardDescriptions/${context.moduleName}/${context.mainPreview.render}`}
 					width={ mainPreviewInfo.viewport[1][0]}
@@ -62,12 +89,13 @@
 					x={mainPreviewInfo.viewport[0][0]}
 					y={mainPreviewInfo.viewport[0][1]}>
 				</image>
-				{#each regionsIn(context.mainPreview) as region}
+				{#each regions as region}
 					<rect
-						class=region
-						x={region[0][0]} y={region[0][1]} width={region[1][0]} height={region[1][1]}
+						class='region view-type-{region.type}'
+						x={region.visibleArea[0][0]} y={region.visibleArea[0][1]} width={region.visibleArea[1][0]} height={region.visibleArea[1][1]}
 						fill=none
-						rx=10>
+						rx=10
+						on:mouseenter={event => undefined}>
 					</rect>
 				{/each}
 			</svg>
@@ -79,9 +107,9 @@
 	</section>
 	<footer>
 		<div>{context.visibleViewReferences.length == 0 ? "No visible subcomponents" : "Visible subcomponents"}</div>
-		<div class="VisibleSubcomponents-scrolling-container">
+		<div class="VisibleSubcomponents-scrolling-container" on:mouseleave={event => undefined}>
 			{#each context.visibleViewReferences as child}
-				<a href={child.href}>
+				<a href={child.href} on:mouseenter={event => highlightRegionsOfType(child.view)}>
 					<img src={child.image ?? '/NoPreview.png'} alt="{child.title}">
 					<span>{child.title}</span>
 				</a>

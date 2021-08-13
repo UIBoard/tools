@@ -23,6 +23,7 @@ export type LimitedDepthBrowserContext = {
 }
 
 type BrowserReference = {
+	view: string
 	title: string
 	href: string
 	image?: string
@@ -58,21 +59,24 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: `/browser/${moduleName}/${nodeName}`, // Todo add better path
-			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview)
+			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview),
+			view: nodeName
 		}
 	}
 	function createOutgoingReference(nodeName: string): BrowserReference {
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: `${root}/${nodeName}`, // Todo add better path
-			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview)
+			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview),
+			view: nodeName
 		}
 	}
 	function createBreadcrumbReference(nodeName: string, path: string[]): BrowserReference {
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: ['','browser', moduleName].concat(path).join('/'), // Todo add better path
-			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview)
+			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview),
+			view: nodeName
 		}
 	}
 }
