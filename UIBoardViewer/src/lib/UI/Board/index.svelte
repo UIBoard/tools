@@ -156,18 +156,20 @@
 		justify-content: center;
 	}
 
-	.MainComponent-container:hover rect.region {
+	.MainComponent-container svg:hover rect.region {
 		fill: rgba(0, 255, 0, 0.001);
-		stroke: green;
+		stroke: rgba(0, 128, 0, 0.5);
 		stroke-width: 1;
 	}
 
-	.MainComponent-container rect.region:hover {
+	.MainComponent-container svg:hover rect.region:hover {
 		stroke-width: 2;
+		stroke: green;
 	}
 
 	.MainComponent-container svg {
 		box-shadow: 0 0 10px rgba(0, 0, 0, 0.459);
+		border-radius: 10px;
 	}
 
 	.MainComponent-container .show-code {
