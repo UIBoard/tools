@@ -27,7 +27,7 @@ export function createPreviewProviderDictionary(visualDecomposition: UIBoard.Pre
 					preview.info.tags.children.map(view => view.type)
 				)
 			} else {
-				console.warn("Preview with no detected view", previewProvider.identifier, preview.render)
+				console.warn("Preview with no detected view", previewProvider.identifier, preview.render, viewNames)
 			}
 		}
 	}

@@ -31,7 +31,6 @@
 	function regionsIn(preview: UIBoard.Preview) {
 		var regions: ClickableCollectedView[] = []
 		collect(preview.info.tags, [])
-		console.log(regions)
 		return regions
 
 		function collect(tag: UIBoard.ViewCollector, path: string[]) {
