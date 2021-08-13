@@ -10,11 +10,13 @@ type LimitedDepthBrowserCreationArguments = {
 	parentMap: Map<string, Set<string>>
 	mostDiversePreviews: PreviewDecomposition
 	moduleName: string,
-	path: string[]
+	path: string[],
+	moduleRoots: string[]
 }
 
 export type LimitedDepthBrowserContext = {
 	moduleName: string
+	moduleRoots: string[]
 	subtree: CompactImageTree;
 	mainPreview?: UIBoard.Preview;
 	visibleViewReferences: BrowserReference[]
@@ -29,7 +31,7 @@ type BrowserReference = {
 	image?: string
 }
 
-export function createLimitedDepthBrowserContext({root, moduleName, path, visibleChildMap, genericDecomposition, parentMap, mostDiversePreviews}: LimitedDepthBrowserCreationArguments): LimitedDepthBrowserContext {
+export function createLimitedDepthBrowserContext({root, moduleName, path, visibleChildMap, genericDecomposition, parentMap, mostDiversePreviews, moduleRoots}: LimitedDepthBrowserCreationArguments): LimitedDepthBrowserContext {
 	const modulePrefix = moduleName + '.'
 
 	console.log('most div prev:', typeof mostDiversePreviews)
@@ -51,7 +53,8 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 		visibleViewReferences: visibleViews,
 		breadcrumbPath: path.map((nodeName, index, path) => createBreadcrumbReference(nodeName, path.slice(0,index+1))),
 		incomingReferences,
-		moduleName
+		moduleName,
+		moduleRoots
 	}
 
 	function pathToPreviewImage(preview?: UIBoard.Preview) {

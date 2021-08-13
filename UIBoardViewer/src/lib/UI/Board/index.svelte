@@ -103,11 +103,13 @@
 
 <section class="UIBoard-container">
 	<nav>
-		<div><img src="/house.fill.png" alt="home"></div>
-		<div>
+		{#if context?.moduleRoots.length}
+		<div><a href="/browser/{context.moduleName}/{context.moduleRoots[0]}"><img src="/house.fill.png" alt="home"></a></div>
+		{/if}
+		<!-- <div>
 			<img src="/chevron.left.png" alt="back">
 			<img src="/chevron.right.png" alt="forward">
-		</div>
+		</div> -->
 		<ol>
 			{#each context.breadcrumbPath as crumb}
 				<li><a href={crumb.href}>{crumb.title}</a></li>

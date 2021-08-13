@@ -47,7 +47,8 @@
 				parentMap,
 				mostDiversePreviews: board.mostDiversePreviews,
 				path: breadcrumbPath,
-				...enhancedBoardDescription
+				...enhancedBoardDescription,
+				moduleRoots: Array.from(board.roots)
 			})
 		else
 			browserContext = null
