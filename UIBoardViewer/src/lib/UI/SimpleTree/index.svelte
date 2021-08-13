@@ -2,7 +2,9 @@
 	import { flextree } from 'd3-flextree'
 	import { hierarchy } from 'd3-hierarchy'
 	import { linkHorizontal } from 'd3-shape'
-	import { select } from 'd3-selection'
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	let svgElement;
 	export let data
@@ -59,7 +61,7 @@
 		<g class="nodes">
 			{#each root.descendants() as node}
 				<g class=node transform="translate({node.y},{node.x})">
-					<a href={node.data.href}>
+					<a href={node.data.href} on:mouseenter={event => dispatch('hoverView', {hover: true, view: node.data.fullName})} on:mouseleave={e=> dispatch('hoverView', {hover: false})}>
 						<circle r=4 class={node.data.isVisibleInParent ? 'visible' : ''}></circle>
 						{#if node.data.previewContext}
 							<g class=text transform="translate(-10,3)" text-anchor=end>

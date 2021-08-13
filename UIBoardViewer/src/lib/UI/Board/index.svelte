@@ -49,7 +49,19 @@
 	type ClickableCollectedView = UIBoard.CollectedView & {href: string}
 
 	function highlightRegionsOfType(view: string) {
-		highlightStyleContainer.innerHTML = `
+		highlightStyleContainer.innerHTML = regionHighlightStyle(view)
+	}
+
+	function highlightViewsOfType(view: string) {
+		highlightStyleContainer.innerHTML = viewHighlightStyle(view)
+	}
+	
+	function removeHighlight() {
+		highlightStyleContainer.innerHTML = ''
+	}
+
+	function regionHighlightStyle(view: string): string {
+		return `
 			svg rect.view-type-${view.replace('.', '\\.')} {
 				stroke-width: 4;
 				stroke: green;
@@ -57,13 +69,9 @@
 		`
 	}
 
-	function removeHighlight() {
-		highlightStyleContainer.innerHTML = ''
-	}
-
-	function highlightViewsOfType(view: string) {
+	function viewHighlightStyle(view: string): string {
 		const className = '.view-type-' + view.replace('.', '\\.')
-		highlightStyleContainer.innerHTML = `
+		return `
 			footer a${className} img {
 				box-shadow: 0 0 10px green;
 			}
@@ -80,6 +88,15 @@
 		return removeStyle // called when unmounted
 		function removeStyle() {
 			document.head.removeChild(highlightStyleContainer)
+		}
+	}
+
+	function conditionalHighlight(event) {
+		const {hover, view}: {hover: boolean, view?: string} = event.detail
+		if (hover) {
+			highlightStyleContainer.innerHTML = regionHighlightStyle(view) + viewHighlightStyle(view)
+		} else {
+			removeHighlight()
 		}
 	}
 </script>
@@ -137,7 +154,7 @@
 			<div class="show-code">Show code</div>
 		</div>
 		<div class="GenericChildren-container">
-			<SimpleTree data={context.subtree}></SimpleTree>
+			<SimpleTree data={context.subtree} on:hoverView={conditionalHighlight}></SimpleTree>
 		</div>
 	</section>
 	<footer>
