@@ -1,5 +1,4 @@
 <script>
-	import { onMount } from 'svelte'
 	import { flextree } from 'd3-flextree'
 	import { hierarchy } from 'd3-hierarchy'
 	import { linkHorizontal } from 'd3-shape'
@@ -9,15 +8,25 @@
 	export let data
 
 	const width = 600
-	const nodeHeight = 15
+	const nodeHeight = 10
 	
 	let root, topBound, bottomBound, height, nodeWidth
 	$: {
+		transformTree(data, node => {
+			if (node.previewContext) {
+				const originalSize = node.previewContext.preview.info.viewport[1]
+				node.flexHeight = 80 / originalSize[0] * originalSize[1]
+			} else {
+				node.flexHeight = nodeHeight
+			}
+		})
 		const hierarchicalData = hierarchy(data)
 		nodeWidth = width / (hierarchicalData.height + 1)
 		const layout = flextree({
-			nodeSize() { return [nodeHeight, nodeWidth] },
-			spacing(left, right) { return left.parent == right.parent ? 0 : 10 }
+			nodeSize(node) {
+				return [node.data.flexHeight, nodeWidth]
+			},
+			spacing(left, right) { return left.parent == right.parent ? 5 : 10 }
 		})
 		const flexHData = layout.hierarchy(data)
 		root = layout(flexHData)
@@ -25,127 +34,58 @@
 		topBound = root.extents.left
 		bottomBound = root.extents.right
 		height = bottomBound - topBound
-		// console.log(topBound, bottomBound, height, root.extents)
 		root.x = (topBound + bottomBound)/2
-
-		redraw(root)
 	}
-
-	let linksGroup, nodesGroup, container, group, back
-	const createHorizontalSpline = linkHorizontal()
-			.x(n => n.y)
-			.y(n => n.x)
 	
-	onMount(drawTree);
-
-	async function drawTree() {
-		container = select(svgElement)
-
-		// back = container
-		// 	.append('rect')
-
-		group = container
-			.append('g')
-			.attr("class", 'tree')
-
-		linksGroup = group
-			.append('g')
-			.attr('class', 'links')
-
-		nodesGroup = group
-			.append('g')
-			.attr('class', 'nodes')
-		
-		redraw(root)
-	}
-
-	function redraw(source) {
-		if (container) {
-			// back
-			// 	.attr('width', 600)
-			// 	.attr('height', height)
-			// 	.attr('y', topBound)
-			// 	.attr('class', 'background')
-
-			const descendants = source.descendants()
-			container
-				.attr('viewBox', [0,topBound, width, height])
-
-			linksGroup
-				.selectAll("path")
-				.data(root.links())
-				.join('path')
-				.attr('d', createHorizontalSpline)
-
-			const nodes = nodesGroup
-				.selectAll('g')
-				.data(descendants, node => node.data.href)
-
-			const newNodes = nodes
-				.enter()
-				.append('g')
-
-			newNodes
-				.attr('transform', node => `translate(${node.y},${node.x})`)
-			nodes
-				.attr('transform', node => `translate(${node.y},${node.x})`)
-
-			nodes.exit().remove()
-
-			drawAnchors(nodes, newNodes)
-		}
-
-		function drawAnchors(nodes, newNodes) {
-			const anchors = nodes.selectAll('a')
-			const newAnchors = newNodes.append('a')
-			updateAnchors(anchors)
-			updateAnchors(newAnchors)
-			drawCircles(anchors, newAnchors)
-			drawTexts(anchors, newAnchors)
-
-			function updateAnchors(anchors) {
-				anchors.attr('href', node => node.data.href)
-			}
-		}
-
-		function drawCircles(nodes, newNodes) {
-			const circles = nodes.selectAll('circle')
-			const newCircles = newNodes
-				.append('circle')
-				.attr('r', 5)
-			updateCircle(circles)
-			updateCircle(newCircles)
-
-			function updateCircle(circles) {
-				circles.attr('class', node => node.data.isVisibleInParent ? 'visible' : '')
-			}
-		}
-
-		function drawTexts(nodes, newNodes) {
-			const textGroups = nodes.selectAll('g.text')
-			const newTextGroups = newNodes
-				.append('g')
-				.attr('class','text')
-				.attr('transform', 'translate(10,3)')
-
-			const newTextBackgrounds = newTextGroups
-				.append('text')
-				.attr('class', 'background')
-			const newTextForegrounds = newTextGroups
-				.append('text')
-			
-			updateText(newTextForegrounds)
-			updateText(newTextBackgrounds)
-			updateText(textGroups.selectAll('text'))
-
-			function updateText(texts) {
-				texts.text(node => node.data.title)
-			}
+	function transformTree(node, transform) {
+		transform(node)
+		for (const child of node.children) {
+			transformTree(child, transform)
 		}
 	}
+
+	const createHorizontalSpline = linkHorizontal()
+		.x(n => n.y)
+		.y(n => n.x)		
 </script>
 
-<svg bind:this={svgElement} class="tree"></svg>
+<svg bind:this={svgElement} class="tree" viewBox="0 {topBound} {width} {height}">
+	<g class=tree>
+		<g class="links">
+			{#each root.links() as link}
+				<path d={createHorizontalSpline(link)}></path>
+			{/each}
+		</g>
+		<g class="nodes">
+			{#each root.descendants() as node}
+				<g class=node transform="translate({node.y},{node.x})">
+					<a href={node.data.href}>
+						<circle r=4 class={node.data.isVisibleInParent ? 'visible' : ''}></circle>
+						{#if node.data.previewContext}
+							<g class=text transform="translate(-10,3)" text-anchor=end>
+								<text class=background>{node.data.title}</text>								
+								<text>{node.data.title}</text>
+							</g>
+							<g transform="translate(10,{-node.data.flexHeight / 2})">
+								<rect width=80 height={node.data.flexHeight} stroke=gray fill=none></rect>
+								<image
+									width=80
+									height={node.data.flexHeight}
+									href={node.data.previewContext.prefix+node.data.previewContext.preview.render}>
+								</image>
+							</g>
+						{:else}
+							<g class=text transform="translate(10,3)">
+								<text class=background>{node.data.title}</text>								
+								<text>{node.data.title}</text>
+							</g>						
+						{/if}
+					</a>
+				</g>
+			{/each}
+		</g>
+	</g>
+</svg>
 
 <style>
 	svg {

@@ -16,7 +16,7 @@ type LimitedDepthBrowserCreationArguments = {
 export type LimitedDepthBrowserContext = {
 	moduleName: string
 	subtree: CompactImageTree;
-	mainPreview: UIBoard.Preview;
+	mainPreview?: UIBoard.Preview;
 	visibleViewReferences: BrowserReference[]
 	incomingReferences: BrowserReference[]
 	breadcrumbPath: BrowserReference[]
@@ -36,15 +36,18 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 
 	const subtree = createSubTreeFrom({depthLimit: 3, root, visibleChildMap, genericDecomposition})
 	const previewProvider = mostDiversePreviews.get(root)
-	const visibleViews = Array.from(previewProvider.viewNames)
-		.filter(name => name != root) // TODO: Remove this because root should not be in this list
-		.map(createOutgoingReference)
+	let visibleViews = []
+	if (previewProvider) {
+		visibleViews = Array.from(previewProvider.viewNames)
+			.filter(name => name != root) // TODO: Remove this because root should not be in this list
+			.map(createOutgoingReference)
+	}
 	const treeWithImages = createCompactImageTree(subtree, mostDiversePreviews, modulePrefix)
 	const incomingReferences = Array.from(parentMap.get(root) ?? [], createIncomingReference)
 
 	return {
 		subtree: treeWithImages,
-		mainPreview: previewProvider.context.preview,
+		mainPreview: previewProvider?.context.preview,
 		visibleViewReferences: visibleViews,
 		breadcrumbPath: path.map((nodeName, index, path) => createBreadcrumbReference(nodeName, path.slice(0,index+1))),
 		incomingReferences,
@@ -82,17 +85,21 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 }
 
 function createCompactImageTree(rootNode: Node, mostDiversePreviews: PreviewDecomposition, modulePrefix: string): CompactImageTree {
-	const firstChildren = rootNode.children.map( node => ({
-		title: node.name.replace(modulePrefix, ''),
-		fullName: node.name,
-		href: rootNode.name + '/' + node.name,
-		children: node.children.map(child => convertNode(child, [rootNode.name, node.name])),
-		isVisibleInParent: node.isVisibleInParent,
-		previewContext: {
-			preview: mostDiversePreviews.get(rootNode.name).context.preview,
-			scale: 1/rootNode.children.length
+	const firstChildren = rootNode.children.map( node => {
+		const preview = mostDiversePreviews.get(node.name)
+		return {
+			title: node.name.replace(modulePrefix, ''),
+			fullName: node.name,
+			href: rootNode.name + '/' + node.name,
+			children: node.children.map(child => convertNode(child, [rootNode.name, node.name])),
+			isVisibleInParent: node.isVisibleInParent,
+			previewContext: preview ? {
+				prefix: '/BoardDescriptions/' + modulePrefix.replace('.', '/'),
+				preview: preview.context.preview,
+				scale: 1/rootNode.children.length
+			} : undefined
 		}
-	}))
+	})
 
 	return {
 		title: '',

@@ -9,14 +9,18 @@
 	
 	export let context: LimitedDepthBrowserContext
 
-	let mainComponentAspect = 0.2, viewBox: string, mainPreviewInfo: UIBoard.PreviewInfo
+	let mainComponentAspect = 0.2, viewBox: string, mainPreviewInfo: UIBoard.PreviewInfo, mainViewName: string
 	$: {
-		mainPreviewInfo = context.mainPreview.info
-		mainComponentAspect = mainPreviewInfo.viewport[1][0] / mainPreviewInfo.viewport[1][1]
-		viewBox = mainPreviewInfo.viewport[0]
-			.map(coordinate => coordinate - 1)
-			.concat(mainPreviewInfo.viewport[1].map(size => size + 2) )
-			.join(' ')
+		if (context.mainPreview) {
+			mainPreviewInfo = context.mainPreview.info
+			mainComponentAspect = mainPreviewInfo.viewport[1][0] / mainPreviewInfo.viewport[1][1]
+			viewBox = mainPreviewInfo.viewport[0]
+				.map(coordinate => coordinate - 1)
+				.concat(mainPreviewInfo.viewport[1].map(size => size + 2) )
+				.join(' ')
+		} else {
+			mainViewName = context.breadcrumbPath[context.breadcrumbPath.length - 1].view
+		}
 	}
 
 	let regions: ClickableCollectedView[]
@@ -103,26 +107,33 @@
 			{/each}
 		</div>
 		<div class="MainComponent-container">
-			<svg viewBox={viewBox} style="width: {20}vw; height: {20 / mainComponentAspect}vw" on:mouseleave={event => removeHighlight()}>
-				<image
-				  href={`/BoardDescriptions/${context.moduleName}/${context.mainPreview.render}`}
-					width={ mainPreviewInfo.viewport[1][0]}
-					height={mainPreviewInfo.viewport[1][1]}
-					x={mainPreviewInfo.viewport[0][0]}
-					y={mainPreviewInfo.viewport[0][1]}>
-				</image>
-				{#each regions as region}
-					<a href={region.href}>
-						<rect
-							class='region view-type-{region.type}'
-							x={region.visibleArea[0][0]} y={region.visibleArea[0][1]} width={region.visibleArea[1][0]} height={region.visibleArea[1][1]}
-							fill=none
-							rx=10
-							on:mouseenter={event => highlightViewsOfType(region.type)}>
-						</rect>
-					</a>
-				{/each}
-			</svg>
+			{#if context.mainPreview}
+				<svg viewBox={viewBox} style="width: {20}vw; height: {20 / mainComponentAspect}vw" on:mouseleave={event => removeHighlight()}>
+					<image
+						href={`/BoardDescriptions/${context.moduleName}/${context.mainPreview.render}`}
+						width={ mainPreviewInfo.viewport[1][0]}
+						height={mainPreviewInfo.viewport[1][1]}
+						x={mainPreviewInfo.viewport[0][0]}
+						y={mainPreviewInfo.viewport[0][1]}>
+					</image>
+					{#each regions as region}
+						<a href={region.href}>
+							<rect
+								class='region view-type-{region.type}'
+								x={region.visibleArea[0][0]} y={region.visibleArea[0][1]} width={region.visibleArea[1][0]} height={region.visibleArea[1][1]}
+								fill=none
+								rx=10
+								on:mouseenter={event => highlightViewsOfType(region.type)}>
+							</rect>
+						</a>
+					{/each}
+				</svg>
+			{:else}
+				<div class="no-preview-main-component">
+					<div><img src='/NoPreview.png' alt="{mainViewName}"></div>
+					<div>No preview available for {mainViewName}</div>	
+				</div>
+			{/if}
 			<div class="show-code">Show code</div>
 		</div>
 		<div class="GenericChildren-container">
@@ -206,6 +217,15 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+	}
+
+	.no-preview-main-component {
+		margin: 2em;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		color: gray
 	}
 
 	.MainComponent-container svg:hover rect.region {
