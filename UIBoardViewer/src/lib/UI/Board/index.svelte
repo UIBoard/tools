@@ -32,7 +32,7 @@
 		<div class="ParentViews-container">
 			{#each context.incomingReferences as parent}
 				<a href={parent.href}>
-					<img src="/BoardDescriptions/{parent.image}" alt="{parent.title}">
+					<img src={parent.image ?? '/NoPreview.png'} alt="{parent.title}">
 					<span>{parent.title}</span>
 				</a>
 			{/each}
@@ -54,11 +54,11 @@
 		</div>
 	</section>
 	<footer>
-		<div>Visible subcomponents</div>
+		<div>{context.visibleViewReferences.length == 0 ? "No visible subcomponents" : "Visible subcomponents"}</div>
 		<div class="VisibleSubcomponents-scrolling-container">
 			{#each context.visibleViewReferences as child}
 				<a href={child.href}>
-					<img src="/BoardDescriptions/{child.image}" alt="{child.title}">
+					<img src={child.image ?? '/NoPreview.png'} alt="{child.title}">
 					<span>{child.title}</span>
 				</a>
 			{/each}
@@ -146,6 +146,11 @@
 		border-radius: 5px;
 	}
 
+	.ParentViews-container > a, .VisibleSubcomponents-scrolling-container > a {
+		text-decoration: none;
+		color: black;
+	}
+
 	.VisibleSubcomponents-scrolling-container {
 		display: flex;
 		padding-top: 0.5em;
@@ -192,6 +197,7 @@
 	.ParentViews-container > a > img {
 		max-height: 100px;
 		max-width: 70px;
+		border-color: rgb(87, 140, 255);
 	}
 	.ParentViews-container > a > span {
 		margin-top: 0.5em;

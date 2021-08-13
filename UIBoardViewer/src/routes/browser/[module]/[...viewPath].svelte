@@ -54,7 +54,7 @@
 	}
 </script>
 
-{#if mainViewIdentifier}
+{#if browserContext}
 	<Board context={browserContext}></Board>
 {:else}
 	<h2>Module {board.moduleDescription.module}</h2>

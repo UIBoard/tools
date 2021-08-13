@@ -31,6 +31,8 @@ type BrowserReference = {
 export function createLimitedDepthBrowserContext({root, moduleName, path, visibleChildMap, genericDecomposition, parentMap, mostDiversePreviews}: LimitedDepthBrowserCreationArguments): LimitedDepthBrowserContext {
 	const modulePrefix = moduleName + '.'
 
+	console.log('most div prev:', typeof mostDiversePreviews)
+
 	const subtree = createSubTreeFrom({depthLimit: 3, root, visibleChildMap, genericDecomposition})
 	const previewProvider = mostDiversePreviews.get(root)
 	const visibleViews = Array.from(previewProvider.viewNames)
@@ -48,25 +50,29 @@ export function createLimitedDepthBrowserContext({root, moduleName, path, visibl
 		moduleName
 	}
 
+	function pathToPreviewImage(preview?: UIBoard.Preview) {
+		if (preview)
+			return '/BoardDescriptions/' + moduleName + '/' + preview.render
+	}
 	function createIncomingReference(nodeName: string): BrowserReference {
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: `/browser/${moduleName}/${nodeName}`, // Todo add better path
-			image: moduleName + '/' + mostDiversePreviews.get(nodeName).context.preview.render
+			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview)
 		}
 	}
 	function createOutgoingReference(nodeName: string): BrowserReference {
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: `${root}/${nodeName}`, // Todo add better path
-			image: moduleName + '/' + mostDiversePreviews.get(nodeName).context.preview.render
+			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview)
 		}
 	}
 	function createBreadcrumbReference(nodeName: string, path: string[]): BrowserReference {
 		return {
 			title: nodeName.replace(modulePrefix, ''),
 			href: ['','browser', moduleName].concat(path).join('/'), // Todo add better path
-			image: moduleName + '/' + mostDiversePreviews.get(nodeName).context.preview.render
+			image: pathToPreviewImage(mostDiversePreviews.get(nodeName)?.context.preview)
 		}
 	}
 }
