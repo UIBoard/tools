@@ -19,7 +19,7 @@
 			.join(' ')
 	}
 
-	let regions: UIBoard.CollectedView[]
+	let regions: ClickableCollectedView[]
 	$: {
 		if (context && context.mainPreview) regions = regionsIn(context.mainPreview)
 	}
@@ -29,17 +29,21 @@
 	onMount(addHighlightStyleContainer)
 
 	function regionsIn(preview: UIBoard.Preview) {
-		var regions: UIBoard.CollectedView[] = []
-		collect(preview.info.tags)
+		var regions: ClickableCollectedView[] = []
+		collect(preview.info.tags, [])
+		console.log(regions)
 		return regions
 
-		function collect(tag: UIBoard.ViewCollector) {
+		function collect(tag: UIBoard.ViewCollector, path: string[]) {
 			for (const child of tag.children) {
-				regions.push(child)
-				collect(child.collector)
+				const newPath = path.concat(child.type)
+				regions.push({...child, href: newPath.join('/')})
+				collect(child.collector, newPath)
 			}
 		}
 	}
+
+	type ClickableCollectedView = UIBoard.CollectedView & {href: string}
 
 	function highlightRegionsOfType(view: string) {
 		highlightStyleContainer.innerHTML = `
@@ -109,13 +113,15 @@
 					y={mainPreviewInfo.viewport[0][1]}>
 				</image>
 				{#each regions as region}
-					<rect
-						class='region view-type-{region.type}'
-						x={region.visibleArea[0][0]} y={region.visibleArea[0][1]} width={region.visibleArea[1][0]} height={region.visibleArea[1][1]}
-						fill=none
-						rx=10
-						on:mouseenter={event => highlightViewsOfType(region.type)}>
-					</rect>
+					<a href={region.href}>
+						<rect
+							class='region view-type-{region.type}'
+							x={region.visibleArea[0][0]} y={region.visibleArea[0][1]} width={region.visibleArea[1][0]} height={region.visibleArea[1][1]}
+							fill=none
+							rx=10
+							on:mouseenter={event => highlightViewsOfType(region.type)}>
+						</rect>
+					</a>
 				{/each}
 			</svg>
 			<div class="show-code">Show code</div>
@@ -236,6 +242,13 @@
 	.ParentViews-container > a, .VisibleSubcomponents-scrolling-container > a {
 		text-decoration: none;
 		color: black;
+		font-size: 10px;
+	}
+
+	.ParentViews-container > a span, .VisibleSubcomponents-scrolling-container > a span {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		max-height: 3em;
 	}
 
 	.VisibleSubcomponents-scrolling-container {
@@ -259,6 +272,7 @@
 	}
 	.VisibleSubcomponents-scrolling-container > a > span {
 		margin-top: 0.5em;
+		max-width: 150px;
 	}
 	.VisibleSubcomponents-scrolling-container > a:first-child {
 		margin-left: 0;
@@ -278,16 +292,16 @@
 		flex-direction: column;
 		justify-content: flex-end;
 		align-items: center;
-		font-size: 10px;
 	}
 
 	.ParentViews-container > a > img {
 		max-height: 100px;
 		max-width: 70px;
-		border-color: rgb(87, 140, 255);
+		border-color: rgb(167, 167, 167);
 	}
 	.ParentViews-container > a > span {
 		margin-top: 0.5em;
+		max-width: 70px;
 	}
 
 	.ParentViews-container > a:first-child {
