@@ -42,7 +42,7 @@ export type SubTreeCreationArguments = {
 }
 
 export function createSubTreeFrom({root, depthLimit, visibleChildMap, genericDecomposition}: SubTreeCreationArguments): Node {
-	return reduceTree( {
+	return trim(reduceTree( {
 		name: root,
 		children: getLinksFrom({
 			view: root,
@@ -50,11 +50,22 @@ export function createSubTreeFrom({root, depthLimit, visibleChildMap, genericDec
 			parents: new Set(),
 			visibleChildMap,
 			genericDecomposition,
-			depthLimit,
+			depthLimit: depthLimit + 5,
 			currentDepth: 1
 		}),
 		isVisibleInParent: false
-	})
+	}), depthLimit)
+}
+
+function trim(tree: Node, depth: number): Node {
+	if (depth < 2) {
+		tree.children = []
+	} else {
+		for (const child of tree.children) {
+			trim(child, depth - 1)
+		}
+	}
+	return tree
 }
 
 function reduceTree(tree: Node): Node {

@@ -9,7 +9,7 @@
 	let svgElement;
 	export let data
 
-	const width = 600
+	const width = 800
 	const nodeHeight = 10
 	
 	let root, topBound, bottomBound, height, nodeWidth
@@ -33,8 +33,8 @@
 		const flexHData = layout.hierarchy(data)
 		root = layout(flexHData)
 
-		topBound = root.extents.left
-		bottomBound = root.extents.right
+		topBound = root.extents.left - 3
+		bottomBound = root.extents.right + 3
 		height = bottomBound - topBound
 		root.x = (topBound + bottomBound)/2
 	}

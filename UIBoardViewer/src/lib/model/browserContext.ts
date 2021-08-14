@@ -34,8 +34,6 @@ type BrowserReference = {
 export function createLimitedDepthBrowserContext({root, moduleName, path, visibleChildMap, genericDecomposition, parentMap, mostDiversePreviews, moduleRoots}: LimitedDepthBrowserCreationArguments): LimitedDepthBrowserContext {
 	const modulePrefix = moduleName + '.'
 
-	console.log('most div prev:', typeof mostDiversePreviews)
-
 	const subtree = createSubTreeFrom({depthLimit: 3, root, visibleChildMap, genericDecomposition})
 	const previewProvider = mostDiversePreviews.get(root)
 	let visibleViews = []
